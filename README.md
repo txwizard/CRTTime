@@ -1,4 +1,4 @@
-# ZLib for Windows for Intel and ARM Processors ReadMe
+# CRTTime for Intel and ARM Processors ReadMe
 
 The purpose of this repository is to publish a port of a very simple library
 that wraps the CRT founctions for getting and formatting the time from the
