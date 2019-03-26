@@ -1,0 +1,39 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="AbbreviateTZNameA.C" />
+    <ClCompile Include="AbbreviateTZNameW.C" />
+    <ClCompile Include="CRTTimeErrMsgA.C" />
+    <ClCompile Include="CRTTimeErrMsgW.C" />
+    <ClCompile Include="dllmain.C" />
+    <ClCompile Include="FormatNowGetStringA.CPP" />
+    <ClCompile Include="FormatNowGetStringW.CPP" />
+    <ClCompile Include="FormatNowUTCA.C" />
+    <ClCompile Include="FormatNowUTCW.C" />
+    <ClCompile Include="FormatNowLocalA.C" />
+    <ClCompile Include="FormatNowLocalW.C" />
+    <ClCompile Include="PrepareForCRTA.C" />
+    <ClCompile Include="PrepareForCRTW.C" />
+    <ClCompile Include="StrfTime2.C" />
+    <ClCompile Include="strftime2_l.C" />
+    <ClCompile Include="wcsftime2.C" />
+    <ClCompile Include="wcsftime2_l.C" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="CRTTime.H" />
+    <ClInclude Include="CRTTime_Pvt.H" />
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="targetver.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="CRTTime.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="CRTTimeErrMsg.INL" />
+    <None Include="FormatNowUTC.INL" />
+    <None Include="FormatNowLocal.INL" />
+    <None Include="FormatNowGetString.INL" />
+    <None Include="PrepareForCRT.INL" />
+    <None Include="strftime2.INL" />
+  </ItemGroup>
+</Project>
