@@ -3,9 +3,12 @@
 #undef UNICODE
 #undef _UNICODE
 
-#include "CRTTime_Pvt.H"
+#include ".\CRTTime_Pvt.H"
 
-char    * __stdcall PrepareForCRTA ( const char    * plpszFormat )
+char    * __stdcall PrepareForCRTA
+(
+    const char    * plpszFormat
+)
 {
-	#include ".\PrepareForCRT.INL"
-}	// PrepareForCRTA
+    #include ".\PrepareForCRT.INL"
+}   // PrepareForCRTA

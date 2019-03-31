@@ -3,9 +3,13 @@
 #undef UNICODE
 #undef _UNICODE
 
-#include "CRTTime_Pvt.H"
+#include ".\CRTTime_Pvt.H"
 
-LPTSTR    __stdcall FormatNowGetStringA ( const void *    pFormat , const HMODULE phDllhModule )
+LPTSTR    __stdcall FormatNowGetStringA
+(
+    const void *  pFormat ,
+    const HMODULE phDllhModule
+)
 {
-	#include ".\FormatNowGetString.INL"
-}	// FormatNowGetStringA
+    #include ".\FormatNowGetString.INL"
+}   // FormatNowGetStringA

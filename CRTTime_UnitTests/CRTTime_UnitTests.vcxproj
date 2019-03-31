@@ -1,4 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+    ============================================================================
+    Name:               CRTTime.vcxproj
+
+    Goal:               Define Microsoft MSBuild and Visual Studio configuration
+                        to build CRTTime for the Win32, x64, ARM, and ARM64
+                        platforms.
+
+    Remarks:            Although this file has been extensively hand-edited, and
+                        some elements, such as the AfterBuild target and the
+                        TestSubjectDLL element on which it relies, are hidden
+                        from the Microsoft Visual Studio editors, everything
+                        works correctly when the project is built within Visual
+                        Studio. Should the need arise to use the Visual Studio
+                        property sheet forms to edit these settings, the hidden
+                        bits are preserved, though redundant white space is
+                        removed.
+
+    ============================================================================
+    Revision History
+    ============================================================================
+
+    Date       By Remark
+    ========== == ==============================================================
+    2019/03/31 DG Copy improved notes about <GenerateDebugInformation> from the
+                  companion library project file.
+    ============================================================================
+-->
+
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|ARM">
@@ -100,7 +129,7 @@
   -->
 
   <ItemGroup>
-    <TestSubjectDLL Include="$(ProjectDir)..\vcruntime140\$(Platform)\vcruntime140.dll;$(ProjectDir)..\LIB\$(Platform)\$(Configuration)\NativeConssoleAppAids$(PlatformArchitecture).dll;$(ProjectDir)..\LIB\$(Platform)\$(Configuration)\NativeConssoleAppAids$(PlatformArchitecture).pdb" />
+    <TestSubjectDLL Include="$(ProjectDir)..\vcruntime140\$(Platform)\vcruntime140.dll;$(ProjectDir)..\LIB\NativeConssoleAppAids$(PlatformArchitecture).dll;$(ProjectDir)..\LIB\NativeConssoleAppAids$(PlatformArchitecture).pdb" />
   </ItemGroup>
 
   <!--
@@ -155,15 +184,19 @@
 
       <!-- These options are the same for all configurations and platforms. -->
 
-      <AdditionalDependencies>$(ProjectDir)..\LIB\$(Platform)\$(Configuration)\NativeConssoleAppAids$(PlatformArchitecture).lib;$(ProjectDir)..\$(Platform)\$(Configuration)\CRTTime$(PlatformArchitecture).lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(ProjectDir)..\LIB\NativeConssoleAppAids$(PlatformArchitecture).lib;$(ProjectDir)..\$(Platform)\$(Configuration)\CRTTime$(PlatformArchitecture).lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(WWLinkLibPath);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <DataExecutionPrevention>true</DataExecutionPrevention>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
+
+      <!-- Setting this key to True implies FASTLINK. To override this behavior,
+           specify DebugFull, which equates to a value of "Generate Debug
+           Information optimized for sharing and publishing (/DEBUG:FULL)" for
+           the Generate Debug Info property on the Linker property sheet.
+      -->
+
       <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
       <GenerateMapFile>true</GenerateMapFile>
-
-      <!-- Setting this key to True implies FASTLINK. To override this behavior, specify DebugFull, which equates to a value of "Generate Debug Information optimized for sharing and publishing (/DEBUG:FULL)" for the Generate Debug Info property on the Linker property sheet. -->
-
       <ImportLibrary>$(OutDir)$(TargetName).lib</ImportLibrary>
       <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
       <MapExports>false</MapExports>
@@ -205,15 +238,19 @@
 
       <!-- These options are the same for all configurations and platforms. -->
 
-      <AdditionalDependencies>$(ProjectDir)..\LIB\$(Platform)\$(Configuration)\NativeConssoleAppAids$(PlatformArchitecture).lib;$(ProjectDir)..\$(Platform)\$(Configuration)\CRTTime$(PlatformArchitecture).lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(ProjectDir)..\LIB\NativeConssoleAppAids$(PlatformArchitecture).lib;$(ProjectDir)..\$(Platform)\$(Configuration)\CRTTime$(PlatformArchitecture).lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(WWLinkLibPath);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <DataExecutionPrevention>true</DataExecutionPrevention>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
+
+      <!-- Setting this key to True implies FASTLINK. To override this behavior,
+           specify DebugFull, which equates to a value of "Generate Debug
+           Information optimized for sharing and publishing (/DEBUG:FULL)" for
+           the Generate Debug Info property on the Linker property sheet.
+      -->
+
       <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
       <GenerateMapFile>true</GenerateMapFile>
-
-      <!-- Setting this key to True implies FASTLINK. To override this behavior, specify DebugFull, which equates to a value of "Generate Debug Information optimized for sharing and publishing (/DEBUG:FULL)" for the Generate Debug Info property on the Linker property sheet. -->
-
       <ImportLibrary>$(OutDir)$(TargetName).lib</ImportLibrary>
       <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
       <MapExports>false</MapExports>
@@ -254,15 +291,19 @@
 
       <!-- These options are the same for all configurations and platforms. -->
 
-      <AdditionalDependencies>$(ProjectDir)..\LIB\$(Platform)\$(Configuration)\NativeConssoleAppAids$(PlatformArchitecture).lib;$(ProjectDir)..\$(Platform)\$(Configuration)\CRTTime$(PlatformArchitecture).lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(ProjectDir)..\LIB\NativeConssoleAppAids$(PlatformArchitecture).lib;$(ProjectDir)..\$(Platform)\$(Configuration)\CRTTime$(PlatformArchitecture).lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(WWLinkLibPath);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <DataExecutionPrevention>true</DataExecutionPrevention>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
+
+      <!-- Setting this key to True implies FASTLINK. To override this behavior,
+           specify DebugFull, which equates to a value of "Generate Debug
+           Information optimized for sharing and publishing (/DEBUG:FULL)" for
+           the Generate Debug Info property on the Linker property sheet.
+      -->
+
       <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
       <GenerateMapFile>true</GenerateMapFile>
-
-      <!-- Setting this key to True implies FASTLINK. To override this behavior, specify DebugFull, which equates to a value of "Generate Debug Information optimized for sharing and publishing (/DEBUG:FULL)" for the Generate Debug Info property on the Linker property sheet. -->
-
       <ImportLibrary>$(OutDir)$(TargetName).lib</ImportLibrary>
       <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
       <MapExports>false</MapExports>
@@ -303,15 +344,19 @@
 
       <!-- These options are the same for all configurations and platforms. -->
 
-      <AdditionalDependencies>$(ProjectDir)..\LIB\$(Platform)\$(Configuration)\NativeConssoleAppAids$(PlatformArchitecture).lib;$(ProjectDir)..\$(Platform)\$(Configuration)\CRTTime$(PlatformArchitecture).lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(ProjectDir)..\LIB\NativeConssoleAppAids$(PlatformArchitecture).lib;$(ProjectDir)..\$(Platform)\$(Configuration)\CRTTime$(PlatformArchitecture).lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(WWLinkLibPath);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <DataExecutionPrevention>true</DataExecutionPrevention>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
+
+      <!-- Setting this key to True implies FASTLINK. To override this behavior,
+           specify DebugFull, which equates to a value of "Generate Debug
+           Information optimized for sharing and publishing (/DEBUG:FULL)" for
+           the Generate Debug Info property on the Linker property sheet.
+      -->
+
       <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
       <GenerateMapFile>true</GenerateMapFile>
-
-      <!-- Setting this key to True implies FASTLINK. To override this behavior, specify DebugFull, which equates to a value of "Generate Debug Information optimized for sharing and publishing (/DEBUG:FULL)" for the Generate Debug Info property on the Linker property sheet. -->
-
       <ImportLibrary>$(OutDir)$(TargetName).lib</ImportLibrary>
       <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
       <MapExports>false</MapExports>
@@ -353,15 +398,19 @@
 
       <!-- These options are the same for all configurations and platforms. -->
 
-      <AdditionalDependencies>$(ProjectDir)..\LIB\$(Platform)\$(Configuration)\NativeConssoleAppAids$(PlatformArchitecture).lib;$(ProjectDir)..\$(Platform)\$(Configuration)\CRTTime$(PlatformArchitecture).lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(ProjectDir)..\LIB\NativeConssoleAppAids$(PlatformArchitecture).lib;$(ProjectDir)..\$(Platform)\$(Configuration)\CRTTime$(PlatformArchitecture).lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(WWLinkLibPath);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <DataExecutionPrevention>true</DataExecutionPrevention>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
+
+      <!-- Setting this key to True implies FASTLINK. To override this behavior,
+           specify DebugFull, which equates to a value of "Generate Debug
+           Information optimized for sharing and publishing (/DEBUG:FULL)" for
+           the Generate Debug Info property on the Linker property sheet.
+      -->
+
       <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
       <GenerateMapFile>true</GenerateMapFile>
-
-      <!-- Setting this key to True implies FASTLINK. To override this behavior, specify DebugFull, which equates to a value of "Generate Debug Information optimized for sharing and publishing (/DEBUG:FULL)" for the Generate Debug Info property on the Linker property sheet. -->
-
       <ImportLibrary>$(OutDir)$(TargetName).lib</ImportLibrary>
       <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
       <MapExports>false</MapExports>
@@ -403,15 +452,19 @@
 
       <!-- These options are the same for all configurations and platforms. -->
 
-      <AdditionalDependencies>$(ProjectDir)..\LIB\$(Platform)\$(Configuration)\NativeConssoleAppAids$(PlatformArchitecture).lib;$(ProjectDir)..\$(Platform)\$(Configuration)\CRTTime$(PlatformArchitecture).lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(ProjectDir)..\LIB\NativeConssoleAppAids$(PlatformArchitecture).lib;$(ProjectDir)..\$(Platform)\$(Configuration)\CRTTime$(PlatformArchitecture).lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(WWLinkLibPath);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <DataExecutionPrevention>true</DataExecutionPrevention>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
+
+      <!-- Setting this key to True implies FASTLINK. To override this behavior,
+           specify DebugFull, which equates to a value of "Generate Debug
+           Information optimized for sharing and publishing (/DEBUG:FULL)" for
+           the Generate Debug Info property on the Linker property sheet.
+      -->
+
       <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
       <GenerateMapFile>true</GenerateMapFile>
-
-      <!-- Setting this key to True implies FASTLINK. To override this behavior, specify DebugFull, which equates to a value of "Generate Debug Information optimized for sharing and publishing (/DEBUG:FULL)" for the Generate Debug Info property on the Linker property sheet. -->
-
       <ImportLibrary>$(OutDir)$(TargetName).lib</ImportLibrary>
       <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
       <MapExports>false</MapExports>
@@ -453,15 +506,19 @@
 
       <!-- These options are the same for all configurations and platforms. -->
 
-      <AdditionalDependencies>$(ProjectDir)..\LIB\$(Platform)\$(Configuration)\NativeConssoleAppAids$(PlatformArchitecture).lib;$(ProjectDir)..\$(Platform)\$(Configuration)\CRTTime$(PlatformArchitecture).lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(ProjectDir)..\LIB\NativeConssoleAppAids$(PlatformArchitecture).lib;$(ProjectDir)..\$(Platform)\$(Configuration)\CRTTime$(PlatformArchitecture).lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(WWLinkLibPath);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <DataExecutionPrevention>true</DataExecutionPrevention>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
+
+      <!-- Setting this key to True implies FASTLINK. To override this behavior,
+           specify DebugFull, which equates to a value of "Generate Debug
+           Information optimized for sharing and publishing (/DEBUG:FULL)" for
+           the Generate Debug Info property on the Linker property sheet.
+      -->
+
       <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
       <GenerateMapFile>true</GenerateMapFile>
-
-      <!-- Setting this key to True implies FASTLINK. To override this behavior, specify DebugFull, which equates to a value of "Generate Debug Information optimized for sharing and publishing (/DEBUG:FULL)" for the Generate Debug Info property on the Linker property sheet. -->
-
       <ImportLibrary>$(OutDir)$(TargetName).lib</ImportLibrary>
       <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
       <MapExports>false</MapExports>
@@ -503,15 +560,19 @@
 
       <!-- These options are the same for all configurations and platforms. -->
 
-      <AdditionalDependencies>$(ProjectDir)..\LIB\$(Platform)\$(Configuration)\NativeConssoleAppAids$(PlatformArchitecture).lib;$(ProjectDir)..\$(Platform)\$(Configuration)\CRTTime$(PlatformArchitecture).lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(ProjectDir)..\LIB\NativeConssoleAppAids$(PlatformArchitecture).lib;$(ProjectDir)..\$(Platform)\$(Configuration)\CRTTime$(PlatformArchitecture).lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(WWLinkLibPath);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <DataExecutionPrevention>true</DataExecutionPrevention>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
+
+      <!-- Setting this key to True implies FASTLINK. To override this behavior,
+           specify DebugFull, which equates to a value of "Generate Debug
+           Information optimized for sharing and publishing (/DEBUG:FULL)" for
+           the Generate Debug Info property on the Linker property sheet.
+      -->
+
       <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
       <GenerateMapFile>true</GenerateMapFile>
-
-      <!-- Setting this key to True implies FASTLINK. To override this behavior, specify DebugFull, which equates to a value of "Generate Debug Information optimized for sharing and publishing (/DEBUG:FULL)" for the Generate Debug Info property on the Linker property sheet. -->
-
       <ImportLibrary>$(OutDir)$(TargetName).lib</ImportLibrary>
       <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
       <MapExports>false</MapExports>

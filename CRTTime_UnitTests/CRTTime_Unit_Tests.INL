@@ -5,7 +5,7 @@ size_t              intCaseIndex;
 
 if ( intNChars = _tcsftime ( ( TCHAR * ) &m_achrOutputBuffer_1 ,
 	                           STRFTIME_OUTBUF_SIZE ,
-	                           STRFTIME_DEFAULT_FORMAT ,
+	                           STRFTIME_DEFAULT_LOCAL_FORMAT ,
 	                           plpcrt_tm_struct ) )
 {
 	_tprintf ( TEXT ( "Test Time = %s\n\n" ) ,
@@ -47,9 +47,9 @@ if ( intNChars = _tcsftime ( ( TCHAR * ) &m_achrOutputBuffer_1 ,
 	}	// for ( intCaseIndex = ARRAY_FIRST_ELEMENT_SUBSCR; intCaseIndex < sizeof ( m_alpszTokenInfo ) / sizeof ( TCHAR * ); intCaseIndex++ )
 
 	return EXIT_SUCCESS;
-}	// TRUE (anticipated outcome) block, if ( intNChars = _tcsftime ( ( wchar_t * ) &m_achrOutputBuffer_1 , STRFTIME_OUTBUF_SIZE , STRFTIME_DEFAULT_FORMAT , &m_crt_tm_struct ) )
+}	// TRUE (anticipated outcome) block, if ( intNChars = _tcsftime ( ( wchar_t * ) &m_achrOutputBuffer_1 , STRFTIME_OUTBUF_SIZE , STRFTIME_DEFAULT_LOCAL_FORMAT , &m_crt_tm_struct ) )
 else
 {
 	_tprintf ( TEXT ( "ERROR: CRT _tcsftime Function Error" ) );
 	return RETCODE_STRFTIME_ERROR;
-}	// FALSE (unanticipated outcome) block, if ( intNChars = _tcsftime ( ( wchar_t * ) &m_achrOutputBuffer_1 , STRFTIME_OUTBUF_SIZE , STRFTIME_DEFAULT_FORMAT , &m_crt_tm_struct ) )
+}	// FALSE (unanticipated outcome) block, if ( intNChars = _tcsftime ( ( wchar_t * ) &m_achrOutputBuffer_1 , STRFTIME_OUTBUF_SIZE , STRFTIME_DEFAULT_LOCAL_FORMAT , &m_crt_tm_struct ) )

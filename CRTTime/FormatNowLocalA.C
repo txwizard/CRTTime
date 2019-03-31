@@ -3,9 +3,13 @@
 #undef UNICODE
 #undef _UNICODE
 
-#include "CRTTime_Pvt.H"
+#include ".\CRTTime_Pvt.H"
 
-LPTSTR LIBSPEC_CRTTIME2_API FormatNowLocalA ( void * pFormat , const HMODULE phDllhModule )
+LPTSTR LIBSPEC_CRTTIME2_API FormatNowLocalA
+(
+    const void *  pFormat ,
+    const HMODULE phDllhModule
+)
 {
-	#include ".\FormatNowLocal.INL"
-}	// FormatNowLocalA
+    #include ".\FormatNowLocal.INL"
+}   // FormatNowLocalA

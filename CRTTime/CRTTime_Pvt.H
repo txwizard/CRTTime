@@ -60,6 +60,8 @@
 #include <stddef.h>
 #include <stdlib.h>
 #include <time.h>
+#include <stdio.h>
+#include <StandardMacros_DAG.H>
 
 #include ".\CRTTime.H"
 
@@ -144,13 +146,6 @@
 #define CRTTIME_ERRMSG_UNKNOWN_ERROR    TEXT ( "The specified status code is undefined." )
 #define CRTTIME_TZ_ABBREVIATION_TOKEN   TEXT ( "^Z^" )
 
-#if defined ( UNICODE )
-	#define RCDATA_INPLACE_POINTER		0
-#else
-	#define RCDATA_BUFFER_CAPACITY		255
-	#define RCDATA_BUFFER_SIZE			( RCDATA_BUFFER_CAPACITY + TRAILING_NULL_ALLOWANCE_P6C )
-#endif	/* #if defined ( UNICODE ) */
-
 #if defined ( __cplusplus )
 extern "C" {
 #endif /* #if defined ( __cplusplus ) */
@@ -207,14 +202,39 @@ extern "C" {
             CRTTIME_ERRMSG_FORMAT_STR_EMPTY };
     #endif  /* #if defined ( CRTTIME_DLLERRMAP_WIDE ) */
 
-    size_t    __stdcall AbbreviateTZNameA   ( char    *       plpszDest );
-    size_t    __stdcall AbbreviateTZNameW   ( wchar_t *       plpszDest );
+    char    * __stdcall AbbreviateTZNameA
+	(
+		const char    *  plpszDest
+	);
 
-	LPTSTR    __stdcall FormatNowGetStringA ( const void *    pFormat , const HMODULE phDllhModule );
-	LPTSTR    __stdcall FormatNowGetStringW ( const void *    pFormat , const HMODULE phDllhModule );
+	wchar_t * __stdcall AbbreviateTZNameW
+	(
+		const wchar_t *  plpszDest
+	);
 
-    char    * __stdcall PrepareForCRTA      ( const char    * plpszFormat );
-    wchar_t * __stdcall PrepareForCRTW      ( const wchar_t * plpszFormat );
+
+	LPTSTR    __stdcall FormatNowGetStringA
+	(
+		const void *  pFormat ,
+		const HMODULE phDllhModule
+	);
+
+	LPTSTR    __stdcall FormatNowGetStringW
+	(
+		const void *  pFormat ,
+		const HMODULE phDllhModule
+	);
+
+
+    char    * __stdcall PrepareForCRTA
+	(
+		const char    * plpszFormat
+	);
+
+    wchar_t * __stdcall PrepareForCRTW
+	(
+		const wchar_t * plpszFormat
+	);
 #if defined ( __cplusplus )
 }
 #endif  /* #if defined ( __cplusplus ) */

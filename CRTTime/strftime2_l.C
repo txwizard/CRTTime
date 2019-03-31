@@ -11,8 +11,8 @@ size_t LIBSPEC_CRTTIME2_API strftime2_l (
 	size_t            pintMaxSize ,
 	const PTCHAR      pstrformat ,
 	const struct tm * plptimeStruct ,
-	_locale_t         plocale
+	const _locale_t   plocale
 )
 {
-	return EMPTY_STRING_LENGTH;
+	#include ".\strftime2_L.INL"
 }	// strftime2_l

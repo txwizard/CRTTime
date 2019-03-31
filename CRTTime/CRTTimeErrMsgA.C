@@ -1,12 +1,15 @@
-//	CRTTimeErrMsgA.C : Define the ANSI implementation of _CRTTimeErrMsg.
+//  CRTTimeErrMsgA.C : Define the ANSI implementation of _CRTTimeErrMsg.
 
 #undef UNICODE
 #undef _UNICODE
 #define CRTTIME_DLLERRMAP_ANSI
 
-#include "CRTTime_Pvt.H"
+#include ".\CRTTime_Pvt.H"
 
-PTCHAR LIBSPEC_CRTTIME2_API CRTTimeErrMsgA ( int pintErrorCode )
+PTCHAR LIBSPEC_CRTTIME2_API CRTTimeErrMsgA
+(
+    const int pintErrorCode
+)
 {
-	#include ".\CRTTimeErrMsg.INL"
-}	// CRTTimeErrMsgA
+    #include ".\CRTTimeErrMsg.INL"
+}   // CRTTimeErrMsgA

@@ -1,9 +1,12 @@
 // AbbreviateTZNameTW.C : Define the Unicode (wide character) time zone abbreviator.
 //
 
-#include "CRTTime_Pvt.H"
+#include ".\CRTTime_Pvt.H"
 
-size_t    __stdcall AbbreviateTZNameW ( wchar_t * plpszDest )
+wchar_t * __stdcall AbbreviateTZNameW
+(
+   const wchar_t * plpszDest
+)
 {
-	return EMPTY_STRING_LENGTH;
-}	// AbbreviateTZNameW
+    return EMPTY_STRING_LENGTH;
+}   // AbbreviateTZNameW

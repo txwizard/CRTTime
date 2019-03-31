@@ -11,8 +11,14 @@
 //  Date       Version By  Synopsis
 //  ---------- ------- --- -----------------------------------------------------
 //  2018/06/25 1.0.0.1 DAG This program was created and tested.
+//
 //  2019/03/22 1.0.0.1 DAG This program was re-created essentially from scratch,
 //                         and its helper functions moved into a library.
+//
+//	2019/03/31 1.0.0.3 DAG Implement a separate default format string for UTC
+//	                       time, STRFTIME_DEFAULT_UTC_FORMAT, rename the
+//						   original STRFTIME_DEFAULT_LOCAL_FORMAT, and move both
+//						   into this library header, where they belong.
 //  ============================================================================
 
 #if !defined ( CRTTIME_UNIT_TESTS_DEFINED )
@@ -83,7 +89,6 @@
 #endif  /* #if defined ( _WIN64 ) ) */
 
 #define STRFTIME_OUTPUT_MAX_CHARS       ( STRFTIME_OUTBUF_SIZE - 1 )
-#define STRFTIME_DEFAULT_FORMAT         TEXT ( "%Y/%m/%d %H:%M:%S %Z" )
 
 
 #if defined ( __cplusplus )

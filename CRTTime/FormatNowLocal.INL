@@ -4,20 +4,19 @@
 
 //	LPTSTR LIBSPEC_CRTTIME2_API FormatNowUTC ( void * pFormat , const HMODULE phDllhModule )
 
+// ToDo: Devise a way for these to start with exactly the same time.
 	time_t				crt_time_t_struct;
 	struct tm			crt_tm_struct;								// The struct keyword is required because I'm compiling as straight C.
 
 	LPTSTR lpszFormatString;
 	size_t uintResult = 0;
 
-	LPTSTR rlpOutputBuffer = ( LPTSTR ) HeapAlloc ( m_hProcHeap ,
-		                                            HEAP_ZERO_MEMORY ,
-		                                            CRTTIME_NOW_OUTPUT_BUFSIZE );
+	LPTSTR rlpOutputBuffer = ( LPTSTR ) AllocBytes_WW( CRTTIME_NOW_OUTPUT_BUFSIZE );
 
 	if ( rlpOutputBuffer )
 	{
 		lpszFormatString = FormatNowGetString( pFormat ,
-			phDllhModule );
+			                                   phDllhModule );
 
 		if ( lpszFormatString )
 		{

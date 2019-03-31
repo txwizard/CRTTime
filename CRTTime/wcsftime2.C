@@ -1,7 +1,7 @@
 // wcsftime2.C : Defines an exported functions for the DLL application.
 //
 
-#include "CRTTime_Pvt.H"
+#include ".\CRTTime_Pvt.H"
 
 size_t LIBSPEC_CRTTIME2_API wcsftime2 (
 	PTCHAR            pstrDest ,

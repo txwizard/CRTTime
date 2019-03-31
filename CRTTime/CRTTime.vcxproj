@@ -1,4 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+    ============================================================================
+    Name:               CRTTime.vcxproj
+
+    Goal:               Define Microsoft MSBuild and Visual Studio configuration
+                        to build CRTTime for the Win32, x64, ARM, and ARM64
+                        platforms.
+
+    Remarks:            Although this file has been extensively hand-edited, and
+                        some elements, such as the AfterBuild target and the
+                        TestSubjectDLL element on which it relies, are hidden
+                        from the Microsoft Visual Studio editors, everything
+                        works correctly when the project is built within Visual
+                        Studio. Should the need arise to use the Visual Studio
+                        property sheet forms to edit these settings, the hidden
+                        bits are preserved, though redundant white space is
+                        removed.
+
+    ============================================================================
+    Revision History
+    ============================================================================
+
+    Date       By Remark
+    ========== == ==============================================================
+    2019/03/31 DG Add additional AfterBuild steps to perform the work that once
+                  was set aside for a PostBuild Event task, and incorporate the
+                  slightly modified resource.h that I copied into the project
+                  from the unit test project, neither of which yet has string
+                  resources.
+    ============================================================================
+-->
+
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|ARM">
@@ -85,6 +117,7 @@
   </PropertyGroup>
 
   <PropertyGroup Label="UserMacros" />
+
   <PropertyGroup>
     <OutDir>$(ProjectDir)..\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)$(Platform)\$(Configuration)\</IntDir>
@@ -102,6 +135,23 @@
     <TestSubjectDLL Include="$(ProjectDir)..\vcruntime140\$(Platform)\vcruntime140.dll" />
   </ItemGroup>
 
+  <!-- This is the file list that goes into the Copy task of targets AfterBuild2
+       and AfterBuild3. These targets supersede the PostBuild step.
+  -->
+
+  <ItemGroup>
+    <LibsBuilt Include="$(OutDir)$(TargetName)$(TargetExt);$(OutDir)$(TargetName).lib;$(OutDir)$(TargetName).pdb" />
+  </ItemGroup>
+
+  <!-- This is the file list that goes into the Copy task of target AfterBuild4.
+       This target updates the local INCLUDE directory that travels with the Git
+       repository.
+  -->
+
+  <ItemGroup>
+    <LibHeaders Include="$(WWIncludePath)\TcharMacros_WW.H;$(WWIncludePath)\CharPosMacros_WW.H;$(WWIncludePath)\MathMacros_WW.H;$(WWIncludePath)\StandardMacros_DAG.H;$(WWIncludePath)\Const_Typedefs_WW.H" />
+  </ItemGroup>
+
   <!--
     ============================================================================
     2019/03/11 - DAG - If my reading of "ARM Intrinsics" is correct, it may be
@@ -112,20 +162,20 @@
                        (x64), and is silent in that regard when the target is
                        either ARM (ARM32) or ARM64.
 
-    Reference:	"ARM Intrinsics"
-			    https://docs.microsoft.com/en-us/cpp/intrinsics/arm-intrinsics?view=vs-2017
+    Reference:  "ARM Intrinsics"
+                https://docs.microsoft.com/en-us/cpp/intrinsics/arm-intrinsics?view=vs-2017
 
-	2019/03/22 - DAG - It appears that AdvancedVectorExtensions2 is equivalent
-	                   to StreamingSIMDExtensions2 for the x64 platform. For all
-	                   other platforms, both are disabled.
+    2019/03/22 - DAG - It appears that AdvancedVectorExtensions2 is equivalent
+                       to StreamingSIMDExtensions2 for the x64 platform. For all
+                       other platforms, both are disabled.
 
-	                   After further experimentation, I'm leaving the decision
-	                   to the compiler, since it appears that the default is to
-	                   use them if available.
+                       After further experimentation, I'm leaving the decision
+                       to the compiler, since it appears that the default is to
+                       use them if available.
 
-	                   Beware that silencing the project property allows the
-	                   value set in the user's default properties for the active
-	                   platform to bleed through.
+                       Beware that silencing the project property allows the
+                       value set in the user's default properties for the active
+                       platform to bleed through.
     ============================================================================
   -->
 
@@ -136,7 +186,7 @@
 
       <!-- These options are the same for all configurations and platforms. -->
 
-      <AdditionalIncludeDirectories>$(WWIncludePath);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\INCLUDE;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <ConformanceMode>true</ConformanceMode>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
@@ -158,10 +208,14 @@
       <AdditionalLibraryDirectories>$(WWLinkLibPath);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <DataExecutionPrevention>true</DataExecutionPrevention>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
+
+      <!-- Setting this key to True implies FASTLINK. To override this behavior,
+           specify DebugFull, which equates to a value of "Generate Debug
+           Information optimized for sharing and publishing (/DEBUG:FULL)" for
+           the Generate Debug Info property on the Linker property sheet.
+      -->
+
       <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
-
-      <!-- Setting this key to True implies FASTLINK. To override this behavior, specify DebugFull, which equates to a value of "Generate Debug Information optimized for sharing and publishing (/DEBUG:FULL)" for the Generate Debug Info property on the Linker property sheet. -->
-
       <GenerateMapFile>true</GenerateMapFile>
       <ImportLibrary>$(OutDir)$(TargetName).lib</ImportLibrary>
       <MapFileName>$(OutDir)$(TargetName).map</MapFileName>
@@ -172,11 +226,6 @@
       <RandomizedBaseAddress>true</RandomizedBaseAddress>
       <SubSystem>Windows</SubSystem>
     </Link>
-
-    <PostBuildEvent>
-      <Command>call VS6_CopyLibs $(ProjectName) $(OutDir) $(PlatformArchitecture)</Command>
-      <Message>Install the DLL and link libraries into the central repository.</Message>
-    </PostBuildEvent>
   </ItemDefinitionGroup>
 
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -186,7 +235,7 @@
 
       <!-- These options are the same for all configurations and platforms. -->
 
-      <AdditionalIncludeDirectories>$(WWIncludePath);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\INCLUDE;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <ConformanceMode>true</ConformanceMode>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
@@ -207,10 +256,14 @@
       <AdditionalLibraryDirectories>$(WWLinkLibPath);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <DataExecutionPrevention>true</DataExecutionPrevention>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
+
+      <!-- Setting this key to True implies FASTLINK. To override this behavior,
+           specify DebugFull, which equates to a value of "Generate Debug
+           Information optimized for sharing and publishing (/DEBUG:FULL)" for
+           the Generate Debug Info property on the Linker property sheet.
+      -->
+
       <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
-
-      <!-- Setting this key to True implies FASTLINK. To override this behavior, specify DebugFull, which equates to a value of "Generate Debug Information optimized for sharing and publishing (/DEBUG:FULL)" for the Generate Debug Info property on the Linker property sheet. -->
-
       <GenerateMapFile>true</GenerateMapFile>
       <ImportLibrary>$(OutDir)$(TargetName).lib</ImportLibrary>
       <MapFileName>$(OutDir)$(TargetName).map</MapFileName>
@@ -221,11 +274,6 @@
       <RandomizedBaseAddress>true</RandomizedBaseAddress>
       <SubSystem>Windows</SubSystem>
     </Link>
-
-    <PostBuildEvent>
-      <Command>call VS6_CopyLibs $(ProjectName) $(OutDir) $(PlatformArchitecture)</Command>
-      <Message>Install the DLL and link libraries into the central repository.</Message>
-    </PostBuildEvent>
   </ItemDefinitionGroup>
 
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
@@ -235,7 +283,7 @@
 
       <!-- These options are the same for all configurations and platforms. -->
 
-      <AdditionalIncludeDirectories>$(WWIncludePath);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\INCLUDE;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <ConformanceMode>true</ConformanceMode>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
@@ -257,10 +305,14 @@
       <AdditionalLibraryDirectories>$(WWLinkLibPath);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <DataExecutionPrevention>true</DataExecutionPrevention>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
+
+      <!-- Setting this key to True implies FASTLINK. To override this behavior,
+           specify DebugFull, which equates to a value of "Generate Debug
+           Information optimized for sharing and publishing (/DEBUG:FULL)" for
+           the Generate Debug Info property on the Linker property sheet.
+      -->
+
       <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
-
-      <!-- Setting this key to True implies FASTLINK. To override this behavior, specify DebugFull, which equates to a value of "Generate Debug Information optimized for sharing and publishing (/DEBUG:FULL)" for the Generate Debug Info property on the Linker property sheet. -->
-
       <GenerateMapFile>true</GenerateMapFile>
       <ImportLibrary>$(OutDir)$(TargetName).lib</ImportLibrary>
       <MapFileName>$(OutDir)$(TargetName).map</MapFileName>
@@ -271,13 +323,6 @@
       <RandomizedBaseAddress>true</RandomizedBaseAddress>
       <SubSystem>Windows</SubSystem>
     </Link>
-
-    <PostBuildEvent>
-      <Command>
-      </Command>
-      <Message>
-      </Message>
-    </PostBuildEvent>
   </ItemDefinitionGroup>
 
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
@@ -287,7 +332,7 @@
 
       <!-- These options are the same for all configurations and platforms. -->
 
-      <AdditionalIncludeDirectories>$(WWIncludePath);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\INCLUDE;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <ConformanceMode>true</ConformanceMode>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
@@ -309,10 +354,14 @@
       <AdditionalLibraryDirectories>$(WWLinkLibPath);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <DataExecutionPrevention>true</DataExecutionPrevention>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
+
+      <!-- Setting this key to True implies FASTLINK. To override this behavior,
+           specify DebugFull, which equates to a value of "Generate Debug
+           Information optimized for sharing and publishing (/DEBUG:FULL)" for
+           the Generate Debug Info property on the Linker property sheet.
+      -->
+
       <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
-
-      <!-- Setting this key to True implies FASTLINK. To override this behavior, specify DebugFull, which equates to a value of "Generate Debug Information optimized for sharing and publishing (/DEBUG:FULL)" for the Generate Debug Info property on the Linker property sheet. -->
-
       <GenerateMapFile>true</GenerateMapFile>
       <ImportLibrary>$(OutDir)$(TargetName).lib</ImportLibrary>
       <MapFileName>$(OutDir)$(TargetName).map</MapFileName>
@@ -323,13 +372,6 @@
       <RandomizedBaseAddress>true</RandomizedBaseAddress>
       <SubSystem>Windows</SubSystem>
     </Link>
-
-    <PostBuildEvent>
-      <Command>
-      </Command>
-      <Message>
-      </Message>
-    </PostBuildEvent>
   </ItemDefinitionGroup>
 
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -339,7 +381,7 @@
 
       <!-- These options are the same for all configurations and platforms. -->
 
-      <AdditionalIncludeDirectories>$(WWIncludePath);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\INCLUDE;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <ConformanceMode>true</ConformanceMode>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
@@ -361,10 +403,14 @@
       <AdditionalLibraryDirectories>$(WWLinkLibPath);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <DataExecutionPrevention>true</DataExecutionPrevention>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
+
+      <!-- Setting this key to True implies FASTLINK. To override this behavior,
+           specify DebugFull, which equates to a value of "Generate Debug
+           Information optimized for sharing and publishing (/DEBUG:FULL)" for
+           the Generate Debug Info property on the Linker property sheet.
+      -->
+
       <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
-
-      <!-- Setting this key to True implies FASTLINK. To override this behavior, specify DebugFull, which equates to a value of "Generate Debug Information optimized for sharing and publishing (/DEBUG:FULL)" for the Generate Debug Info property on the Linker property sheet. -->
-
       <GenerateMapFile>true</GenerateMapFile>
       <ImportLibrary>$(OutDir)$(TargetName).lib</ImportLibrary>
       <MapFileName>$(OutDir)$(TargetName).map</MapFileName>
@@ -375,11 +421,6 @@
       <RandomizedBaseAddress>true</RandomizedBaseAddress>
       <SubSystem>Windows</SubSystem>
     </Link>
-
-    <PostBuildEvent>
-      <Command>call VS6_CopyLibs $(ProjectName) $(OutDir) $(PlatformArchitecture)</Command>
-      <Message>Install the DLL and link libraries into the central repository.</Message>
-    </PostBuildEvent>
   </ItemDefinitionGroup>
 
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -389,7 +430,7 @@
 
       <!-- These options are the same for all configurations and platforms. -->
 
-      <AdditionalIncludeDirectories>$(WWIncludePath);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\INCLUDE;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <ConformanceMode>true</ConformanceMode>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
@@ -413,7 +454,11 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
 
-      <!-- Setting this key to True implies FASTLINK. To override this behavior, specify DebugFull, which equates to a value of "Generate Debug Information optimized for sharing and publishing (/DEBUG:FULL)" for the Generate Debug Info property on the Linker property sheet. -->
+      <!-- Setting this key to True implies FASTLINK. To override this behavior,
+           specify DebugFull, which equates to a value of "Generate Debug
+           Information optimized for sharing and publishing (/DEBUG:FULL)" for
+           the Generate Debug Info property on the Linker property sheet.
+      -->
 
       <GenerateMapFile>true</GenerateMapFile>
       <ImportLibrary>$(OutDir)$(TargetName).lib</ImportLibrary>
@@ -425,11 +470,6 @@
       <RandomizedBaseAddress>true</RandomizedBaseAddress>
       <SubSystem>Windows</SubSystem>
     </Link>
-
-    <PostBuildEvent>
-      <Command>call VS6_CopyLibs $(ProjectName) $(OutDir) $(PlatformArchitecture)</Command>
-      <Message>Install the DLL and link libraries into the central repository.</Message>
-    </PostBuildEvent>
   </ItemDefinitionGroup>
 
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
@@ -439,7 +479,7 @@
 
       <!-- These options are the same for all configurations and platforms. -->
 
-      <AdditionalIncludeDirectories>$(WWIncludePath);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\INCLUDE;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <ConformanceMode>true</ConformanceMode>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
@@ -461,10 +501,14 @@
       <AdditionalLibraryDirectories>$(WWLinkLibPath);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <DataExecutionPrevention>true</DataExecutionPrevention>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
+
+      <!-- Setting this key to True implies FASTLINK. To override this behavior,
+           specify DebugFull, which equates to a value of "Generate Debug
+           Information optimized for sharing and publishing (/DEBUG:FULL)" for
+           the Generate Debug Info property on the Linker property sheet.
+      -->
+
       <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
-
-      <!-- Setting this key to True implies FASTLINK. To override this behavior, specify DebugFull, which equates to a value of "Generate Debug Information optimized for sharing and publishing (/DEBUG:FULL)" for the Generate Debug Info property on the Linker property sheet. -->
-
       <GenerateMapFile>true</GenerateMapFile>
       <ImportLibrary>$(OutDir)$(TargetName).lib</ImportLibrary>
       <MapFileName>$(OutDir)$(TargetName).map</MapFileName>
@@ -475,13 +519,6 @@
       <RandomizedBaseAddress>true</RandomizedBaseAddress>
       <SubSystem>Windows</SubSystem>
     </Link>
-
-    <PostBuildEvent>
-      <Command>
-      </Command>
-      <Message>
-      </Message>
-    </PostBuildEvent>
   </ItemDefinitionGroup>
 
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
@@ -491,7 +528,7 @@
 
       <!-- These options are the same for all configurations and platforms. -->
 
-      <AdditionalIncludeDirectories>$(WWIncludePath);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\INCLUDE;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <ConformanceMode>true</ConformanceMode>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
@@ -513,10 +550,14 @@
       <AdditionalLibraryDirectories>$(WWLinkLibPath);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <DataExecutionPrevention>true</DataExecutionPrevention>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
+
+      <!-- Setting this key to True implies FASTLINK. To override this behavior,
+           specify DebugFull, which equates to a value of "Generate Debug
+           Information optimized for sharing and publishing (/DEBUG:FULL)" for
+           the Generate Debug Info property on the Linker property sheet.
+      -->
+
       <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
-
-      <!-- Setting this key to True implies FASTLINK. To override this behavior, specify DebugFull, which equates to a value of "Generate Debug Information optimized for sharing and publishing (/DEBUG:FULL)" for the Generate Debug Info property on the Linker property sheet. -->
-
       <GenerateMapFile>true</GenerateMapFile>
       <ImportLibrary>$(OutDir)$(TargetName).lib</ImportLibrary>
       <MapFileName>$(OutDir)$(TargetName).map</MapFileName>
@@ -527,53 +568,52 @@
       <RandomizedBaseAddress>true</RandomizedBaseAddress>
       <SubSystem>Windows</SubSystem>
     </Link>
-
-    <PostBuildEvent>
-      <Command>
-      </Command>
-      <Message>
-      </Message>
-    </PostBuildEvent>
   </ItemDefinitionGroup>
 
   <ItemGroup>
-    <ClInclude Include="CRTTime.H" />
-    <ClInclude Include="CRTTime_Pvt.H" />
-    <ClInclude Include="resource.h" />
-    <ClInclude Include="targetver.h" />
+    <ClInclude Include=".\CRTTime.H" />
+    <ClInclude Include=".\CRTTime_Pvt.H" />
+    <ClInclude Include=".\resource.h" />
+    <ClInclude Include=".\targetver.h" />
+    <ClInclude Include="..\INCLUDE\CharPosMacros_WW.H" />
+    <ClInclude Include="..\INCLUDE\Const_Typedefs_WW.H" />
+    <ClInclude Include="..\INCLUDE\MathMacros_WW.H" />
+    <ClInclude Include="..\INCLUDE\StandardMacros_DAG.H" />
+    <ClInclude Include="..\INCLUDE\TcharMacros_WW.H" />
   </ItemGroup>
 
   <ItemGroup>
-    <ClCompile Include="AbbreviateTZNameA.C" />
-    <ClCompile Include="AbbreviateTZNameW.C" />
-    <ClCompile Include="CRTTimeErrMsgA.C" />
-    <ClCompile Include="CRTTimeErrMsgW.C" />
-    <ClCompile Include="dllmain.C" />
-    <ClCompile Include="FormatNowGetStringA.CPP" />
-    <ClCompile Include="FormatNowGetStringW.CPP" />
-    <ClCompile Include="FormatNowUTCA.C" />
-    <ClCompile Include="FormatNowUTCW.C" />
-    <ClCompile Include="FormatNowLocalA.C" />
-    <ClCompile Include="FormatNowLocalW.C" />
-    <ClCompile Include="PrepareForCRTA.C" />
-    <ClCompile Include="PrepareForCRTW.C" />
-    <ClCompile Include="StrfTime2.C" />
-    <ClCompile Include="strftime2_l.C" />
-    <ClCompile Include="wcsftime2.C" />
-    <ClCompile Include="wcsftime2_l.C" />
+    <ClCompile Include=".\AbbreviateTZNameA.C" />
+    <ClCompile Include=".\AbbreviateTZNameW.C" />
+    <ClCompile Include=".\CRTTimeErrMsgA.C" />
+    <ClCompile Include=".\CRTTimeErrMsgW.C" />
+    <ClCompile Include=".\dllmain.C" />
+    <ClCompile Include=".\FormatNowGetStringA.CPP" />
+    <ClCompile Include=".\FormatNowGetStringW.CPP" />
+    <ClCompile Include=".\FormatNowUTCA.C" />
+    <ClCompile Include=".\FormatNowUTCW.C" />
+    <ClCompile Include=".\FormatNowLocalA.C" />
+    <ClCompile Include=".\FormatNowLocalW.C" />
+    <ClCompile Include=".\PrepareForCRTA.C" />
+    <ClCompile Include=".\PrepareForCRTW.C" />
+    <ClCompile Include=".\strfTime2.C" />
+    <ClCompile Include=".\strftime2_l.C" />
+    <ClCompile Include=".\wcsftime2.C" />
+    <ClCompile Include=".\wcsftime2_l.C" />
   </ItemGroup>
 
   <ItemGroup>
-    <ResourceCompile Include="CRTTime.rc" />
+    <ResourceCompile Include=".\CRTTime.rc" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="CRTTimeErrMsg.INL" />
-    <None Include="FormatNowUTC.INL" />
-    <None Include="FormatNowLocal.INL" />
-    <None Include="FormatNowGetString.INL" />
-    <None Include="PrepareForCRT.INL" />
-    <None Include="strftime2.INL" />
+    <None Include=".\CRTTimeErrMsg.INL" />
+    <None Include=".\FormatNowUTC.INL" />
+    <None Include=".\FormatNowLocal.INL" />
+    <None Include=".\FormatNowGetString.INL" />
+    <None Include=".\PrepareForCRT.INL" />
+    <None Include=".\strftime2.INL" />
+    <None Include=".\strftime2_L.INL" />
   </ItemGroup>
 
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
@@ -620,8 +660,61 @@
 
   <Target Name="AfterBuild">
     <Copy SourceFiles="@(TestSubjectDLL)"
-    	  DestinationFolder="$(OutDir)"
-    	  OverwriteReadOnlyFiles="true"
-    	  SkipUnchangedFiles="true" />
+          DestinationFolder="$(OutDir)"
+          OverwriteReadOnlyFiles="true"
+          SkipUnchangedFiles="true" />
   </Target>
+
+  <Target Name="AfterBuild2"
+          AfterTargets="AfterBuild"
+          Condition="exists('$(WWLinkLibPath)') AND ( '$(Configuration)'=='Release' ) AND ( ( '$(Platform)'=='Win32' ) OR ( '$(Platform)'=='x64' ) )">
+
+    <!--
+        This task puts copies of the library files into the common library
+        directory to which environment string WWLinkLibPath points. Unless the
+        specified directory exists, this target is skipped.
+
+        Since the predominant work in my shop targets Win32 and x64, only those
+        two platforms go into the common library repository.
+    -->
+
+    <Copy SourceFiles="@(LibsBuilt)"
+          DestinationFolder="$(WWLinkLibPath)"
+          OverwriteReadOnlyFiles="true"
+          SkipUnchangedFiles="true" />
+  </Target>
+
+  <Target Name="AfterBuild3"
+          AfterTargets="AfterBuild"
+          Condition="exists('C:\Users\DAG\Documents\_Clients\CodeProject Authors Group\Windows on ARM\libxml2\libxml2-2.9.9\win32\VC10') AND '$(Configuration)'=='Release'">
+
+    <!--
+        This task puts copies of the library files into the dedicated library
+        directory of the libxml2 repository. Unless the specified directory
+        exists, this target is skipped.
+
+        Only release builds go into the libxml2 library repository.
+    -->
+
+    <Copy SourceFiles="@(LibsBuilt)"
+          DestinationFolder="C:\Users\DAG\Documents\_Clients\CodeProject Authors Group\Windows on ARM\libxml2\libxml2-2.9.9\win32\VC10\LIB"
+          OverwriteReadOnlyFiles="true"
+          SkipUnchangedFiles="true" />
+  </Target>
+
+  <Target Name="AfterBuild4"
+          AfterTargets="BeforeBuildGenerateSources"
+          Condition="exists('$(WWIncludePath)')">
+
+    <!--
+        This task puts copies of the library declaration and macro header files
+        into the local INCLUDE directory that travels with the repository.
+    -->
+
+    <Copy SourceFiles="@(LibHeaders)"
+          DestinationFolder="$(ProjectDir)..\INCLUDE"
+          OverwriteReadOnlyFiles="true"
+          SkipUnchangedFiles="true" />
+  </Target>
+
 </Project>

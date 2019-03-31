@@ -25,7 +25,7 @@
     if ( lpTZToken )
     {
     	intFormatLength 		= _tcslen ( plpszFormat );
-    	rlpszFormat 			= ( PTCHAR ) malloc ( ( intFormatLength + CRTTIME_TZ_ABBR_ALLOWANCE ) * sizeof ( TCHAR ) );
+    	rlpszFormat 			= ( PTCHAR ) AllocTchars_WW( intFormatLength + CRTTIME_TZ_ABBR_ALLOWANCE );
 
     	if ( rlpszFormat )
     	{

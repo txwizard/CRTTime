@@ -1,19 +1,27 @@
 # CRTTime for Intel and ARM Processors ReadMe
 
+__Current Version:__ 1.0.0.3
+
+__Release Date:__ Sunday, 31 March 2019
+
 The purpose of this repository is to publish a port of a very simple library
-that wraps the CRT founctions for getting and formatting the time from the
+that wraps the CRT functions for getting and formatting the time from the
 system clock in a friendly standard DLL that makes these useful routines
-readily accessible to fans of most programming languages, even VBA.
+readily accessible to fans of most programming languages, even VBA. If your
+language or tool can call into the Windows API, it can call into this library.
 
 This code is entirely of my own devising, although most of it is not especially
 original or interesting. The feature that make it worthy of publication is that
 the Visual Studio project around which it is built supports building it for four
 platforms.
 
-1 __Win32__ runs in 32-bit mode on Intel and AMD processors.
-2 __x64__ runs in 64-bit mode on Intel and AMD processors.
-3 __ARM__ runs in 32-bit mode on any ARM processor.
-4 __ARM64__ runs in 64-bit mode on any ARM processor.
+1. __Win32__ runs in 32-bit mode on Intel and AMD processors.
+2. __x64__ runs in 64-bit mode on Intel and AMD processors.
+3. __ARM__ runs in 32-bit mode on any ARM processor.
+4. __ARM64__ runs in 64-bit mode on any ARM processor.
+
+The unit test program displays a message indicating the platform on which it is
+executing.
 
 ## Using These Libraries
 
@@ -31,6 +39,19 @@ internal format of a NuGet package.
 For your convenience, the required CRT libraries are included in the binary
 packages, and the build scripts deposit a copy into the output directory of each
 project.
+
+## ToDo
+
+Though the project contains two source modules, `AbbreviateTZNameA.C` and
+`AbbreviateTZNameW.C,` intended to implement substitution of abbreviations for
+the time zone names returned by strftime, both are stubs, neither of which is
+wired into the library.
+
+Strings are currently hard coded, though embedding them as string resources
+would slightly reduce the size on disk and in memory of the DLL. There is, of
+course, a tad of computational overhead involved in moving the strings into
+Win32 resource strings, but doing so would pave the way for translations to
+support other written languages.
 
 ## The Visual Studio Solution and Projects
 

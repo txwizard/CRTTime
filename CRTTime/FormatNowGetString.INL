@@ -35,16 +35,16 @@
 			#else
 				rlpFormatString = ( LPTSTR )  HeapAlloc ( m_hProcHeap , 
 					                                      HEAP_ZERO_MEMORY ,
-					                                      RCDATA_BUFFER_SIZE );
+					                                      RCDATA_MAX_BUFFER_BYTES_P6C );
 
 				if ( rlpFormatString )
 				{
 					if ( LoadString( phDllhModule
-						? phDllhModule
-						: m_lpDllhModule ,
-						uintResourceID ,
-						rlpFormatString ,
-						RCDATA_BUFFER_CAPACITY ) )
+										? phDllhModule
+										: m_lpDllhModule ,
+									 uintResourceID ,
+									 rlpFormatString ,
+									 RCDATA_MAX_LENGTH_P6C ) )
 					{
 						return rlpFormatString;
 					}	// TRUE (anticipated outcome) block, if ( LoadString ( phDllhModule ? phDllhModule : m_lpDllhModule , uintResourceID , rlpFormatString ,RCDATA_INPLACE_POINTER ) )

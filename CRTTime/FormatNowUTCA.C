@@ -3,9 +3,13 @@
 #undef UNICODE
 #undef _UNICODE
 
-#include "CRTTime_Pvt.H"
+#include ".\CRTTime_Pvt.H"
 
-LPTSTR LIBSPEC_CRTTIME2_API FormatNowUTCA ( void * pFormat , const HMODULE phDllhModule )
+LPTSTR LIBSPEC_CRTTIME2_API FormatNowUTCA
+(
+    const void *  pFormat ,
+    const HMODULE phDllhModule
+)
 {
-	#include ".\FormatNowUTC.INL"
-}	// FormatNowUTCA
+    #include ".\FormatNowUTC.INL"
+}   // FormatNowUTCA
