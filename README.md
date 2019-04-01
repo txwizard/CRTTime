@@ -65,11 +65,11 @@ outputs (`.asm` and `.obj`) are in the `Intermediate` subdirectory.
 
 There are two projects
 
-1 __CRTTime__ contains the source code of the library, itself.
+1. __CRTTime__ contains the source code of the library, itself.
 
-2 __CRTTime_UnitTests__ contains the source code of the unit test program, which
-  is a normal program; I didn't use a "unit test framework" because I believe it
-  is overkill for such a simple project.
+2. __CRTTime_UnitTests__ contains the source code of the unit test program, which
+   is a normal program; I didn't use a "unit test framework" because I believe it
+   is overkill for such a simple project.
 
 The Visual Studio projects specify the settings that are required to guarantee
 that certain required settings have the correct values for a successful build.
