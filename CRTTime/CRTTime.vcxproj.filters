@@ -1,39 +1,45 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="AbbreviateTZNameA.C" />
-    <ClCompile Include="AbbreviateTZNameW.C" />
-    <ClCompile Include="CRTTimeErrMsgA.C" />
-    <ClCompile Include="CRTTimeErrMsgW.C" />
-    <ClCompile Include="dllmain.C" />
-    <ClCompile Include="FormatNowGetStringA.CPP" />
-    <ClCompile Include="FormatNowGetStringW.CPP" />
-    <ClCompile Include="FormatNowUTCA.C" />
-    <ClCompile Include="FormatNowUTCW.C" />
-    <ClCompile Include="FormatNowLocalA.C" />
-    <ClCompile Include="FormatNowLocalW.C" />
-    <ClCompile Include="PrepareForCRTA.C" />
-    <ClCompile Include="PrepareForCRTW.C" />
-    <ClCompile Include="StrfTime2.C" />
-    <ClCompile Include="strftime2_l.C" />
-    <ClCompile Include="wcsftime2.C" />
-    <ClCompile Include="wcsftime2_l.C" />
+    <ClCompile Include=".\AbbreviateTZNameA.C" />
+    <ClCompile Include=".\AbbreviateTZNameW.C" />
+    <ClCompile Include=".\CRTTimeErrMsgA.C" />
+    <ClCompile Include=".\CRTTimeErrMsgW.C" />
+    <ClCompile Include=".\dllmain.C" />
+    <ClCompile Include=".\FormatNowGetStringA.CPP" />
+    <ClCompile Include=".\FormatNowGetStringW.CPP" />
+    <ClCompile Include=".\FormatNowUTCA.C" />
+    <ClCompile Include=".\FormatNowUTCW.C" />
+    <ClCompile Include=".\FormatNowLocalA.C" />
+    <ClCompile Include=".\FormatNowLocalW.C" />
+    <ClCompile Include=".\PrepareForCRTA.C" />
+    <ClCompile Include=".\PrepareForCRTW.C" />
+    <ClCompile Include=".\strfTime2.C" />
+    <ClCompile Include=".\strftime2_l.C" />
+    <ClCompile Include=".\wcsftime2.C" />
+    <ClCompile Include=".\wcsftime2_l.C" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="CRTTime.H" />
-    <ClInclude Include="CRTTime_Pvt.H" />
-    <ClInclude Include="resource.h" />
-    <ClInclude Include="targetver.h" />
+    <ClInclude Include=".\CRTTime.H" />
+    <ClInclude Include=".\CRTTime_Pvt.H" />
+    <ClInclude Include=".\resource.h" />
+    <ClInclude Include=".\targetver.h" />
+    <ClInclude Include="..\INCLUDE\CharPosMacros_WW.H" />
+    <ClInclude Include="..\INCLUDE\Const_Typedefs_WW.H" />
+    <ClInclude Include="..\INCLUDE\MathMacros_WW.H" />
+    <ClInclude Include="..\INCLUDE\StandardMacros_DAG.H" />
+    <ClInclude Include="..\INCLUDE\TcharMacros_WW.H" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="CRTTime.rc" />
+    <ResourceCompile Include=".\CRTTime.rc" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="CRTTimeErrMsg.INL" />
-    <None Include="FormatNowUTC.INL" />
-    <None Include="FormatNowLocal.INL" />
-    <None Include="FormatNowGetString.INL" />
-    <None Include="PrepareForCRT.INL" />
-    <None Include="strftime2.INL" />
+    <None Include=".\CRTTimeErrMsg.INL" />
+    <None Include=".\FormatNowUTC.INL" />
+    <None Include=".\FormatNowLocal.INL" />
+    <None Include=".\FormatNowGetString.INL" />
+    <None Include=".\PrepareForCRT.INL" />
+    <None Include=".\strftime2.INL" />
+    <None Include=".\strftime2_L.INL" />
   </ItemGroup>
 </Project>

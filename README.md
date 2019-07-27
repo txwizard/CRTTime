@@ -1,6 +1,22 @@
 # CRTTime for Intel and ARM Processors ReadMe
 
-__Current Version:__ 1.0.0.3
+__Current Version:__ 1.0.0.4
+
+__Release Date:__ Friday, 26 July 2019
+
+This version is built against the newer platform toolset that shipped with the
+2019 edition of Microsoft Visual Studio Community Edition, and is otherwise not
+significantly different from its predecessor. The only code change is amendment
+of the name by which WaitForCarbonUnit is called to halt the unit test program.
+This change reflects a change in the dependent library that defines CRT function
+WaitForCarbonUnit, which got changed a bit over a week after the previous
+version of this library was released.
+
+Since the ARM project is completed and set aside, and I no longer have access to
+the ARM machine that I used to test them, the ARM libraries are unchanged, and
+compatible versions of their dependent libraries ship with them. If anyone wants
+them upgraded, has an ARM machine that runs Microsoft Windows 10, and is willing
+to test and report the outcome, please open an issue.
 
 __Release Date:__ Sunday, 31 March 2019
 

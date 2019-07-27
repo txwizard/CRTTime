@@ -15,10 +15,14 @@
 //  2019/03/22 1.0.0.1 DAG This program was re-created essentially from scratch,
 //                         and its helper functions moved into a library.
 //
-//	2019/03/31 1.0.0.3 DAG Implement a separate default format string for UTC
+//	2019/07/26 1.0.0.3 DAG Implement a separate default format string for UTC
 //	                       time, STRFTIME_DEFAULT_UTC_FORMAT, rename the
 //						   original STRFTIME_DEFAULT_LOCAL_FORMAT, and move both
-//						   into this library header, where they belong.
+//						   into this library header, where they belong, and fix
+//                         the misnamed function WaitForCarbonUnit, which was
+//                         corrected in NativeConssoleAppAids, version 1.0.0.5,
+//                         released 2019/04/09, nine days after this project got
+//                         pushed to the back burner.
 //  ============================================================================
 
 #if !defined ( CRTTIME_UNIT_TESTS_DEFINED )
@@ -36,7 +40,7 @@
 #include <windows.h>					// Windows Header Files
 
 #include "..\CRTTime\CRTTime.H"			// Declare CRTTime functions under test.
-#include ".\NativeConssoleAppAids.h"	// Declare console application helper functions from a library.
+#include <NativeConssoleAppAids.h>		// Declare console application helper functions from a library.
 
 #include <TcharMacros_WW.H>             // Define my character string sizing and processing macros.
 #include <MathMacros_WW.H>              // Define my array math constants and computation macros.
