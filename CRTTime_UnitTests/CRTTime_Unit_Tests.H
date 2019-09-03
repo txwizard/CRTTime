@@ -23,27 +23,60 @@
 //                         corrected in NativeConssoleAppAids, version 1.0.0.5,
 //                         released 2019/04/09, nine days after this project got
 //                         pushed to the back burner.
+//
+//	2019/08/05 1.0.0.3 DAG Implement tests for routines added to CRTTime today.
+//
+//	2019/08/27 1.0.0.4 DAG Correct errors, one of which caused a small memory
+//                         leak in the main test routine that abandoned the UTC
+//						   time string and explicitly define m_crt_time_t_struct
+//					       as time_t, rather than int.
 //  ============================================================================
 
 #if !defined ( CRTTIME_UNIT_TESTS_DEFINED )
 #define        CRTTIME_UNIT_TESTS_DEFINED
 
 #if defined ( _MSC_VER ) && ( _MSC_VER >= 1020 )
-	#pragma once
+    #pragma once
 #endif  /* #if defined ( _MSC_VER ) && ( _MSC_VER >= 1020 ) */
 
 #include "..\CRTTime\targetver.h"
-
-#include <stdio.h>                      // Declare standard file and stream I/O routines.
 
 #define WIN32_LEAN_AND_MEAN             // Exclude rarely-used stuff from Windows headers
 #include <windows.h>					// Windows Header Files
 
 #include "..\CRTTime\CRTTime.H"			// Declare CRTTime functions under test.
-#include <NativeConssoleAppAids.h>		// Declare console application helper functions from a library.
 
-#include <TcharMacros_WW.H>             // Define my character string sizing and processing macros.
-#include <MathMacros_WW.H>              // Define my array math constants and computation macros.
+#include <NativeConssoleAppAids.h>		// Declare console application helper functions from a like-named library.
+#include <NativeStringAids.H>			// Declare string processing helper functions from a like-named library.
+#include <StandardMacros_DAG.H>         // Define my core CPP macros. This header brings: stdlib.h, malloc.h, stdio.h, MathMacros_WW.H, TcharMacros_WW.H, and Const_Typedefs_WW.H.
+
+#include ".\resource.h"					// Declare String Resource IDs.
+
+//	----------------------------------------------------------------------------
+//	Declare CleanupAndReportOutcome, an ultra-short function, with inline
+//	linkage, so that the compiler treats it as a compromise between a macro,
+//	which is not usually expected to return a value, and a function, which does.
+//
+//	NOTE:	Had I realized how difficult inline functions are to decode, I might
+//			have been better off coding it as a pair of conventional functions,
+//			which could cohabit other modules.
+//	----------------------------------------------------------------------------
+
+int __inline CleanupAndReportOutcome ( TCHAR  * pFinalReportMsg ,
+                                       LPTSTR * plpMsgBuf ,
+                                       int      pdwRetCode )
+{
+    _tprintf ( pFinalReportMsg );
+
+    #if !defined ( UNICODE )
+    * plpMsgBuf = ( LPTSTR ) HeapFree ( GetProcessHeap ( ) ,
+                                        HEAP_ALL_FLAGS_OFF_P6C ,
+                                        * plpMsgBuf );
+    #endif	/* #if !defined ( UNICODE ) */
+
+    return pdwRetCode;
+}	// int __inline CleanupAndReportOutcome
+
 
 //  ----------------------------------------------------------------------------
 //  The following block might be overkill, but it makes the values explicit for
@@ -94,7 +127,6 @@
 
 #define STRFTIME_OUTPUT_MAX_CHARS       ( STRFTIME_OUTBUF_SIZE - 1 )
 
-
 #if defined ( __cplusplus )
 extern "C" {
 #endif /* #if defined ( __cplusplus ) */
@@ -116,13 +148,13 @@ extern "C" {
         typedef int                     bool ;
     #endif  /* #if !defined ( bool ) */
 
-    #if !defined ( BOOK )
+    #if !defined ( BOOL )
         #if defined ( _DEBUG )
-            #pragma message ( __FILE__ ": CPP variable BOOK is UNdefined. Make it so." )
+            #pragma message ( __FILE__ ": CPP variable BOOL is UNdefined. Make it so." )
         #endif  /* #if defined ( _DEBUG ) */
 
-        typedef int                     BOOK ;
-    #endif  /* #if !defined ( BOOK ) */
+        typedef int                     BOOL ;
+    #endif  /* #if !defined ( BOOL ) */
 
     #if !defined ( true )
         #if defined ( _DEBUG )
@@ -174,8 +206,12 @@ extern "C" {
         #pragma message ( __FILE__ ": CPP variable CRTTIME_UNIT_TESTS_MAIN is defined. Define two strftime output buffers." )
     #endif  /* #if defined ( _DEBUG ) */
 
-    wchar_t         m_achrOutputBuffer_1 [ STRFTIME_OUTBUF_SIZE ];
-    wchar_t         m_achrOutputBuffer_2 [ STRFTIME_OUTBUF_SIZE ];
+    HANDLE					m_hProcHeap			= NULL;
+
+    wchar_t					m_achrOutputBuffer_1 [ STRFTIME_OUTBUF_SIZE ];
+    wchar_t					m_achrOutputBuffer_2 [ STRFTIME_OUTBUF_SIZE ];
+
+    LPCRTWaitForCarbonUnit	m_utpWaitForCarbonUnit;
 #else
     #if defined ( _DEBUG )
         #pragma message ( __FILE__ ": CPP variable CRTTIME2_UNIT_TESTS_MAIN is UNdefined." )
@@ -190,8 +226,12 @@ extern "C" {
             #pragma message ( __FILE__ ": CPP variable CRTTIME_UNIT_TESTS_HELPERS is UNdefined. Create strftime2 string tables." )
         #endif  /* #if defined ( _DEBUG ) */
 
-        extern wchar_t         m_achrOutputBuffer_1 [ STRFTIME_OUTBUF_SIZE ];
-        extern wchar_t         m_achrOutputBuffer_2 [ STRFTIME_OUTBUF_SIZE ];
+        extern HANDLE					m_hProcHeap;
+
+        extern wchar_t					m_achrOutputBuffer_1 [ STRFTIME_OUTBUF_SIZE ];
+        extern wchar_t					m_achrOutputBuffer_2 [ STRFTIME_OUTBUF_SIZE ];
+
+        extern LPCRTWaitForCarbonUnit	m_utpWaitForCarbonUnit;
 
         #if defined (_UNICODE )
             #if defined ( _DEBUG )

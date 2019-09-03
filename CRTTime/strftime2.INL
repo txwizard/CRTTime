@@ -8,7 +8,7 @@
 		{
 			if ( rintNChars = _tcsftime ( pstrDest ,
 										  pintMaxSize ,
-					                      pstrformat ,
+					                      lpFormatString ,
 						                  plptimeStruct ) )
 			{
 				return rintNChars;

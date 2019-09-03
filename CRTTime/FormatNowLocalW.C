@@ -1,4 +1,4 @@
-// FormatNowLocalW.C : Define the Unicode (wide characteer) current local time formatter.
+// FormatNowLocalW.C : Define the Unicode (wide character) current local time formatter.
 //
 
 #include ".\CRTTime_Pvt.H"

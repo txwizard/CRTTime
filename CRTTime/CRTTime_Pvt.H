@@ -47,28 +47,31 @@
 
     Date       Version Author Synopsis
     ---------- ------- ------ --------------------------------------------------
-	2018/06/26 1.0.0.1 DAG    Initial release
-	2019/03/25 1.0.0.2 DAG    Implement wrappers that return formatted local and
-	                          UTC current time strings via strftime.
-	============================================================================
+    2018/06/26 1.0.0.1 DAG    Initial release
+
+    2019/03/25 1.0.0.2 DAG    Implement wrappers that return formatted local and
+                              UTC current time strings via strftime.
+
+    2019/09/01 1.0.0.4 DAG    Implement one routine that returns pointers to two
+                              strings, the first representing the current local
+                              time and the second representing the UTC time, and
+                              make the library more resistant to memory leaks.
+    ============================================================================
 */
 
-#if !defined ( CRTTime_Pvt_DEFINED )
-#define        CRTTime_Pvt_DEFINED
+#if !defined ( CRTTIME_PVT_DEFINED )
+#define        CRTTIME_PVT_DEFINED
 
 #include ".\targetver.h"
+
 #include <stddef.h>
 #include <stdlib.h>
-#include <time.h>
-#include <stdio.h>
-#include <StandardMacros_DAG.H>
+#include <time.h>						// Time.h is devoid of generic TCHAR mappings.
+
+
+#include <StandardMacros_DAG.H>			// Let stdio.h come in through this header, even though not strictly necessary, since stdio.h performs no generic TCHAR mappings.
 
 #include ".\CRTTime.H"
-
-#if !defined ( TRAILING_NULL_ALLOWANCE_P6C )
-	#undef	TRAILING_NULL_ALLOWANCE_P6C
-	#define TRAILING_NULL_ALLOWANCE_P6C	1
-#endif	/* #if defined ( TRAILING_NULL_ALLOWANCE_P6C ) */
 
 #if !defined ( __cplusplus )
     #if !defined ( bool )
@@ -106,10 +109,9 @@
     #define ARRAY_INVALID_SUBSCRIPT     -1
     #define ARRAY_NEXT_SUBSCRIPT        0x0000000000000001
 
-	#define CRTTIME_NOW_OUTPUT_BUFCAP	0xff
-	#define CRTTIME_NOW_OUTPUT_BUFSIZE	( CRTTIME_NOW_OUTPUT_BUFCAP + TRAILING_NULL_ALLOWANCE_P6C )
-	#define CRT_TIME_ERROR              -1
-    #define CRT_TIME_CONVERSION_ERROR   0x000000000000000L
+    #define CRTTIME_NOW_OUTPUT_BUFCAP	0xff
+    #define CRT_TIME_ERROR              -1
+    #define CRT_TIME_CONVERSION_SUCCESS 0x000000000000000L
     #define CRTTIME_TZ_ABBR_ALLOWANCE   0x0000000000000003  // Allow for two new characters (marker tokens) and a terminal NULL character.
 
     #define EMPTY_STRING_LENGTH         0x0000000000000000
@@ -120,14 +122,16 @@
     #define ARRAY_NEXT_SUBSCRIPT        0x00000001L
 
     #define CRT_TIME_ERROR              -1
-    #define CRT_TIME_CONVERSION_ERROR   0x00000000L
-	#define CRTTIME_NOW_OUTPUT_BUFCAP	0xff
-	#define CRTTIME_NOW_OUTPUT_BUFSIZE	( CRTTIME_NOW_OUTPUT_BUFCAP + TRAILING_NULL_ALLOWANCE_P6C )
+    #define CRT_TIME_CONVERSION_SUCCESS 0x00000000L
+    #define CRTTIME_NOW_OUTPUT_BUFCAP	0xff
     #define CRTTIME_TZ_ABBR_ALLOWANCE   0x00000003L         // Allow for two new characters (marker tokens) and a terminal NULL character.
 
     #define EMPTY_STRING_LENGTH         0x00000000L
     #define UNKNOWN_STRING_LENGTH       -1L
 #endif  /* #if defined ( _WIN64 ) */
+
+#define FORMATTIMECLEANUP_ERROR			TRUE
+#define FORMATTIMECLEANUP_SUCCESS		FALSE
 
 #define CRTTIME_ERR_NONE                0x00000000L
 #define CRTTIME_ERR_FORMAT_STR_NULL     -1L
@@ -136,7 +140,6 @@
 #define CRTTIME_ERRMSG_NONE             TEXT ( "The function succeeded." )
 #define CRTTIME_ERRMSG_FORMAT_STR_NULL  TEXT ( "The time format string pointer is NULL." )
 #define CRTTIME_ERRMSG_FORMAT_STR_EMPTY TEXT ( "The format string is empty.")
-
 
 //  ----------------------------------------------------------------------------
 //  The following message string is returned directly to report an out-of-bounds
@@ -175,17 +178,17 @@ extern "C" {
                const size_t    m_intTokenTableASize = sizeof ( m_lpTZAbbrevTokensA ) / sizeof ( char    * );
                const size_t    m_intTokenTableWSize = sizeof ( m_lpTZAbbrevTokensW ) / sizeof ( wchar_t * );
 
-			         HMODULE   m_lpDllhModule		= NULL;
-			         HANDLE	   m_hProcHeap			= NULL;
+                     HMODULE   m_lpDllhModule		= NULL;
+                     HANDLE	   m_hProcHeap			= NULL;
     #else
-	    extern       size_t    m_intTokenTableASize;
+        extern       size_t    m_intTokenTableASize;
         extern       size_t    m_intTokenTableWSize;
 
         extern       char    * m_lpTZAbbrevTokensA [ ];
         extern       wchar_t * m_lpTZAbbrevTokensW [ ];
-		
-		extern       HMODULE   m_lpDllhModule;
-		extern       HANDLE	   m_hProcHeap;
+        
+        extern       HMODULE   m_lpDllhModule;
+        extern       HANDLE	   m_hProcHeap;
     #endif  // #if defined ( CRTTIME2_DLLMAIN )
 
     #if defined ( CRTTIME_DLLERRMAP_ANSI )
@@ -202,54 +205,62 @@ extern "C" {
             CRTTIME_ERRMSG_FORMAT_STR_EMPTY };
     #endif  /* #if defined ( CRTTIME_DLLERRMAP_WIDE ) */
 
+    LPVOID	  __stdcall FormatTimeCleanup
+    (
+        LPCVOID * prlpFormattedTime,
+        LPCVOID   pFormat,
+        LPCVOID * plpszFormatString,
+        CBOOL     pfDiscardFomrattetTime
+    );
+
     char    * __stdcall AbbreviateTZNameA
-	(
-		const char    *  plpszDest
-	);
+    (
+        const char    *  plpszDest
+    );
 
-	wchar_t * __stdcall AbbreviateTZNameW
-	(
-		const wchar_t *  plpszDest
-	);
+    wchar_t * __stdcall AbbreviateTZNameW
+    (
+        const wchar_t *  plpszDest
+    );
 
 
-	LPTSTR    __stdcall FormatNowGetStringA
-	(
-		const void *  pFormat ,
-		const HMODULE phDllhModule
-	);
+    LPTSTR    __stdcall FormatNowGetStringA
+    (
+        const void *  pFormat ,
+        const HMODULE phDllhModule
+    );
 
-	LPTSTR    __stdcall FormatNowGetStringW
-	(
-		const void *  pFormat ,
-		const HMODULE phDllhModule
-	);
+    LPTSTR    __stdcall FormatNowGetStringW
+    (
+        const void *  pFormat ,
+        const HMODULE phDllhModule
+    );
 
 
     char    * __stdcall PrepareForCRTA
-	(
-		const char    * plpszFormat
-	);
+    (
+        const char    * plpszFormat
+    );
 
     wchar_t * __stdcall PrepareForCRTW
-	(
-		const wchar_t * plpszFormat
-	);
+    (
+        const wchar_t * plpszFormat
+    );
 #if defined ( __cplusplus )
 }
 #endif  /* #if defined ( __cplusplus ) */
 
 #if defined ( _UNICODE )
     #define AbbreviateTZName            AbbreviateTZNameW
-	#define FormatNowGetString			FormatNowGetStringW
+    #define FormatNowGetString			FormatNowGetStringW
     #define PrepareForCRT               PrepareForCRTW
     #define m_lpTZAbbrevTokens          m_lpTZAbbrevTokensW
     #define m_intTokenTableSize         m_intTokenTableWSize
 #else
     #define AbbreviateTZName            AbbreviateTZNameA
-	#define FormatNowGetString			FormatNowGetStringA
+    #define FormatNowGetString			FormatNowGetStringA
     #define PrepareForCRT               PrepareForCRTA
     #define m_lpTZAbbrevTokens          m_lpTZAbbrevTokensA
     #define m_intTokenTableSize         m_intTokenTableASize
 #endif  /* #if defined ( _UNICODE ) */
-#endif  /* CRTTime_Pvt_DEFINED */
+#endif  /* CRTTIME_PVT_DEFINED */

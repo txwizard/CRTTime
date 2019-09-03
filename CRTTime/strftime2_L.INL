@@ -8,7 +8,7 @@
 		{
 			if ( rintNChars = _tcsftime_l ( pstrDest ,
 										    pintMaxSize ,
-					                        pstrformat ,
+					                        lpFormatString ,
 						                    plptimeStruct ,
 				                            plocale ) )
 			{
@@ -28,4 +28,4 @@
 	{	// The supplied input string is a null reference.
 		return CRTTIME_ERR_FORMAT_STR_NULL;
 	}	// FALSE (unanticipated outcome) block, if ( format )
-// strftime2
+// strftime2 and wcsftime2

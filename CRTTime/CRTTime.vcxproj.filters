@@ -18,6 +18,13 @@
     <ClCompile Include=".\strftime2_l.C" />
     <ClCompile Include=".\wcsftime2.C" />
     <ClCompile Include=".\wcsftime2_l.C" />
+    <ClCompile Include="FormatTimeLocalA.C" />
+    <ClCompile Include="FormatTimeLocalW.C" />
+    <ClCompile Include="FormatTimeUTCA.C" />
+    <ClCompile Include="FormatTimeUTCW.C" />
+    <ClCompile Include="FormatTimeBothA.C" />
+    <ClCompile Include="FormatTimeBothW.C" />
+    <ClCompile Include="FormatTimeCleanup.C" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include=".\CRTTime.H" />
@@ -41,5 +48,8 @@
     <None Include=".\PrepareForCRT.INL" />
     <None Include=".\strftime2.INL" />
     <None Include=".\strftime2_L.INL" />
+    <None Include="FormatTimeLocal.INL" />
+    <None Include="FormatTimeUTC.INL" />
+    <None Include="FormatTimeBoth.INL" />
   </ItemGroup>
 </Project>

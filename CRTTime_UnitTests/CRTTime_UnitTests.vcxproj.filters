@@ -21,10 +21,10 @@
     <ClInclude Include="CRTTime_Unit_Tests.H">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="NativeConssoleAppAids.h">
+    <ClInclude Include="..\CRTTime\CRTTime.H">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\CRTTime\CRTTime.H">
+    <ClInclude Include="..\..\..\INCLUDE\NativeConssoleAppAids.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -48,5 +48,10 @@
     <None Include="CRTTime_Unit_Tests.INL">
       <Filter>Header Files</Filter>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\..\EventLogging\ELALogger\WW_Icon1.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>

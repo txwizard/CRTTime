@@ -2,6 +2,48 @@
 
 __Current Version:__ 1.0.0.4
 
+
+__Release Date:__ Monday, 02 September 2019
+
+This version implements one routine that returns pointers to two strings, the
+first representing the current local time and the second representing the UTC
+time. `FormatTimeBoth` is implemented for both ANSI (narrow character) and
+Unicode (wide character) encodings, which may be called directly as
+`FormatTimeBothA` and `FormatTimeBoth`, respectively, or through a generic
+TCHAR mapping, `FormatTimeBoth`.
+
+Both routines take a pointer to a `CRT_TIME_BOTH` structure, which is passed as a
+`LPCRT_TIME_BOTH` type, and may be allocated from the heap if you need it once
+only. If you allocate the `CRT_TIME_BOTH` structure from the heap, you _must_
+initialize the first member, `UniverslSystemTime`, a 64-bit time_t structure
+that wraps an `\_\_int64`. Initializing `UniverslSystemTime` to zero causes
+`FormatTimeBoth` to use the system time, which it gets from the machine clock
+by calling the CRT library routine `time`, saving the result into the
+`UniverslSystemTime` member.
+
+When `FormatTimeBoth` returns, `CRT_TIME_BOTH` members `TimeStringLocal` and
+`TimeStringUtc` contain the local and UTC time, respectively.
+
+Both `TimeStringLocal` and `TimeStringUtc` point to dynamically allocated memory
+that was allocated from the default process heap. To avoid leaking memory, you
+must call HeapFree on both pointers before the structure goes out of scope.
+
+## Road Map
+
+In the beginning, this library came together to meet the needs of the ARM
+converison project into which I incorporated it. With that project behind me,
+and new requirements facing me, there is a small road map.
+
+1)	Implement `AbbreviateTZName`, and integrate it into the other date
+formatters.
+
+2)	Define `FormatBothCeanup` to look after discarding the memory occupied by
+the formatted date and time strings.
+
+3)	Move my very robust Gregorian Calendar year and leap year testing routines
+into this library, so that I can abandon the 32-bit library that was its
+predecessor.
+
 __Release Date:__ Friday, 26 July 2019
 
 This version is built against the newer platform toolset that shipped with the

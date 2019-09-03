@@ -8,7 +8,20 @@
 
 	if ( pFormat != CRTTIME_INVALID_FORMAT )
 	{
-		UINT uintResourceID = ( UINT ) pFormat;
+		//	--------------------------------------------------------------------
+		//	The following block is the most efficient way to compensate for the
+		//	different address lengths of 32-bit and 64-bit machine addresses. It
+		//	uses preprocessor symbols defined by the Microsoft Visual C++
+		//	compiler.
+		//	--------------------------------------------------------------------
+
+		#if ( defined ( _M_ARM ) || defined ( _M_IX86 ) )
+		unsigned int uintResourceID = ( unsigned int ) pFormat;
+		#elif ( defined ( _M_ARM64 ) || defined ( _M_X64 ) )
+		unsigned __int64 uintResourceID = ( unsigned __int64 ) pFormat;
+		#else	/* Neither #if ( defined ( _M_ARM ) || defined ( _M_IX86 ) ), nor #elif ( defined ( _M_ARM64 ) || defined ( _M_X64 ) ) is TRUE. */
+		#error Platform cannot be determined because all of the following are UNdefined: _M_ARM, _M_IX86, _M_ARM64 _M_X64.
+		#endif	/* #if ( defined ( _M_ARM ) || defined ( _M_IX86 ) ) AND #elif ( defined ( _M_ARM64 ) || defined ( _M_X64 ) ) */
 
 		if ( uintResourceID > CRTTIME_FORMAT_STRING_ID_LIMIT )
 		{
@@ -22,7 +35,7 @@
 				if ( LoadString ( phDllhModule
 										? phDllhModule
 										: m_lpDllhModule ,
-					              uintResourceID ,
+					              ( unsigned int ) uintResourceID ,
 					              rlpFormatString ,
 					              RCDATA_INPLACE_POINTER ) )
 				{
@@ -42,7 +55,7 @@
 					if ( LoadString( phDllhModule
 										? phDllhModule
 										: m_lpDllhModule ,
-									 uintResourceID ,
+									 ( unsigned int ) uintResourceID ,
 									 rlpFormatString ,
 									 RCDATA_MAX_LENGTH_P6C ) )
 					{

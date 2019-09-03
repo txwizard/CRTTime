@@ -25,6 +25,18 @@
     ========== == ==============================================================
     2019/03/31 DG Copy improved notes about <GenerateDebugInformation> from the
                   companion library project file.
+
+    2019/08/01 DG Explicitly add the DebugInformationFormat tag, since the build
+                  is behaving as if it isn't reading it from my user default
+                  build settings.
+
+    2019/08/24 DG Exclude CRT runtime library vcruntime140.dll from Windows x86
+                  and x64 builds. For the time being, I'll leave it in the ARM
+                  builds, and add NativeStringAids to the output directory of
+                  all builds.
+
+    2019/09/01 DG Ensure that AssemblerOutput is specified in all configurations
+                  and that LanguageStandard is omitted (implicitly default).
     ============================================================================
 -->
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
@@ -103,12 +115,22 @@
   <!--
     ============================================================================
     2019/03/22 - DAG - The AfterBuild task, defined at the bottom of this file,
-                       consumes this list of semicolon-delimited absolute file
-                       names to copy into the output directory.
+                       consumes a platform-dependent list of semicolon-delimited
+                       absolute file names to copy into the output directory.
+
+    2019/08/24 - DAG - CRT runtime library vcruntime140.dll is omitted from the
+                       Windows platform builds because the library that would be
+                       copied is almost certainly out of date with respect to
+                       the Windows installation(s) on which it will run, and it
+                       is best to leave the consumer in charge of installing it,
+                       if necessary.
     ============================================================================
   -->
-  <ItemGroup>
-    <TestSubjectDLL Include="$(ProjectDir)..\vcruntime140\$(Platform)\vcruntime140.dll;$(ProjectDir)..\LIB\NativeConssoleAppAids$(PlatformArchitecture).dll;$(ProjectDir)..\LIB\NativeConssoleAppAids$(PlatformArchitecture).pdb" />
+  <ItemGroup Condition="'$(Platform)'!='Win32' AND '$(Platform)'!='x64'">
+    <TestSubjectDLL Include="$(ProjectDir)..\vcruntime140\$(Platform)\vcruntime140.dll;$(ProjectDir)..\LIB\NativeConssoleAppAids$(PlatformArchitecture).dll;$(ProjectDir)..\LIB\NativeConssoleAppAids$(PlatformArchitecture).pdb;$(ProjectDir)..\LIB\NativeStringAids$(PlatformArchitecture).dll;$(ProjectDir)..\LIB\NativeStringAids$(PlatformArchitecture).pdb" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(Platform)'=='Win32' OR  '$(Platform)'=='x64'">
+    <TestSubjectDLL Include="$(ProjectDir)..\LIB\NativeConssoleAppAids$(PlatformArchitecture).dll;$(ProjectDir)..\LIB\NativeConssoleAppAids$(PlatformArchitecture).pdb;$(ProjectDir)..\LIB\NativeStringAids$(PlatformArchitecture).dll;$(ProjectDir)..\LIB\NativeStringAids$(PlatformArchitecture).pdb" />
   </ItemGroup>
   <!--
     ============================================================================
@@ -142,27 +164,30 @@
       <PreprocessorDefinitions>PLATFORM_IS_$(Platform);PROJ_IS_$(ProjectName);WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <!-- These options are the same for all configurations and platforms. -->
       <AdditionalIncludeDirectories>$(WWIncludePath);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerOutput>AssemblyAndSourceCode</AssemblerOutput>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <ConformanceMode>true</ConformanceMode>
+      <DiagnosticsFormat>Caret</DiagnosticsFormat>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
+      <MultiProcessorCompilation>false</MultiProcessorCompilation>
       <OmitFramePointers>false</OmitFramePointers>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <SDLCheck>true</SDLCheck>
       <SuppressStartupBanner>false</SuppressStartupBanner>
       <WarningLevel>Level3</WarningLevel>
-      <AssemblerOutput>AssemblyAndSourceCode</AssemblerOutput>
     </ClCompile>
     <Link>
       <ImageHasSafeExceptionHandlers>true</ImageHasSafeExceptionHandlers>
       <!-- These options are the same for all configurations and platforms. -->
-      <AdditionalDependencies>$(ProjectDir)..\LIB\NativeConssoleAppAids$(PlatformArchitecture).lib;$(ProjectDir)..\$(Platform)\$(Configuration)\CRTTime$(PlatformArchitecture).lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(ProjectDir)..\$(Platform)\$(Configuration)\CRTTime$(PlatformArchitecture).lib;$(ProjectDir)..\LIB\NativeConssoleAppAids$(PlatformArchitecture).lib;$(ProjectDir)..\LIB\NativeStringAids$(PlatformArchitecture).lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(WWLinkLibPath);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <DataExecutionPrevention>true</DataExecutionPrevention>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <!-- Setting this key to True implies FASTLINK. To override this behavior,
+      <!--
+           Setting this key to True implies FASTLINK. To override this behavior,
            specify DebugFull, which equates to a value of "Generate Debug
            Information optimized for sharing and publishing (/DEBUG:FULL)" for
            the Generate Debug Info property on the Linker property sheet.
@@ -189,27 +214,30 @@
       <PreprocessorDefinitions>PLATFORM_IS_$(Platform);PROJ_IS_$(ProjectName);_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <!-- These options are the same for all configurations and platforms. -->
       <AdditionalIncludeDirectories>$(WWIncludePath);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerOutput>AssemblyAndSourceCode</AssemblerOutput>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <ConformanceMode>true</ConformanceMode>
+      <DiagnosticsFormat>Caret</DiagnosticsFormat>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
+      <MultiProcessorCompilation>false</MultiProcessorCompilation>
       <OmitFramePointers>false</OmitFramePointers>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <SDLCheck>true</SDLCheck>
       <SuppressStartupBanner>false</SuppressStartupBanner>
       <WarningLevel>Level3</WarningLevel>
-      <AssemblerOutput>AssemblyAndSourceCode</AssemblerOutput>
     </ClCompile>
     <Link>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
       <!-- These options are the same for all configurations and platforms. -->
-      <AdditionalDependencies>$(ProjectDir)..\LIB\NativeConssoleAppAids$(PlatformArchitecture).lib;$(ProjectDir)..\$(Platform)\$(Configuration)\CRTTime$(PlatformArchitecture).lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(ProjectDir)..\$(Platform)\$(Configuration)\CRTTime$(PlatformArchitecture).lib;$(ProjectDir)..\LIB\NativeConssoleAppAids$(PlatformArchitecture).lib;$(ProjectDir)..\LIB\NativeStringAids$(PlatformArchitecture).lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(WWLinkLibPath);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <DataExecutionPrevention>true</DataExecutionPrevention>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <!-- Setting this key to True implies FASTLINK. To override this behavior,
+      <!--
+           Setting this key to True implies FASTLINK. To override this behavior,
            specify DebugFull, which equates to a value of "Generate Debug
            Information optimized for sharing and publishing (/DEBUG:FULL)" for
            the Generate Debug Info property on the Linker property sheet.
@@ -236,11 +264,14 @@
       <PreprocessorDefinitions>PLATFORM_IS_$(Platform);PROJ_IS_$(ProjectName);_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <!-- These options are the same for all configurations and platforms. -->
       <AdditionalIncludeDirectories>$(WWIncludePath);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerOutput>AssemblyAndSourceCode</AssemblerOutput>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <ConformanceMode>true</ConformanceMode>
+      <DiagnosticsFormat>Caret</DiagnosticsFormat>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
+      <MultiProcessorCompilation>false</MultiProcessorCompilation>
       <OmitFramePointers>false</OmitFramePointers>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
@@ -251,11 +282,12 @@
     <Link>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
       <!-- These options are the same for all configurations and platforms. -->
-      <AdditionalDependencies>$(ProjectDir)..\LIB\NativeConssoleAppAids$(PlatformArchitecture).lib;$(ProjectDir)..\$(Platform)\$(Configuration)\CRTTime$(PlatformArchitecture).lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(ProjectDir)..\$(Platform)\$(Configuration)\CRTTime$(PlatformArchitecture).lib;$(ProjectDir)..\LIB\NativeConssoleAppAids$(PlatformArchitecture).lib;$(ProjectDir)..\LIB\NativeStringAids$(PlatformArchitecture).lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(WWLinkLibPath);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <DataExecutionPrevention>true</DataExecutionPrevention>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <!-- Setting this key to True implies FASTLINK. To override this behavior,
+      <!--
+           Setting this key to True implies FASTLINK. To override this behavior,
            specify DebugFull, which equates to a value of "Generate Debug
            Information optimized for sharing and publishing (/DEBUG:FULL)" for
            the Generate Debug Info property on the Linker property sheet.
@@ -282,11 +314,14 @@
       <PreprocessorDefinitions>PLATFORM_IS_$(Platform);PROJ_IS_$(ProjectName);_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <!-- These options are the same for all configurations and platforms. -->
       <AdditionalIncludeDirectories>$(WWIncludePath);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerOutput>AssemblyAndSourceCode</AssemblerOutput>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <ConformanceMode>true</ConformanceMode>
+      <DiagnosticsFormat>Caret</DiagnosticsFormat>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
+      <MultiProcessorCompilation>false</MultiProcessorCompilation>
       <OmitFramePointers>false</OmitFramePointers>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
@@ -297,11 +332,12 @@
     <Link>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
       <!-- These options are the same for all configurations and platforms. -->
-      <AdditionalDependencies>$(ProjectDir)..\LIB\NativeConssoleAppAids$(PlatformArchitecture).lib;$(ProjectDir)..\$(Platform)\$(Configuration)\CRTTime$(PlatformArchitecture).lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(ProjectDir)..\$(Platform)\$(Configuration)\CRTTime$(PlatformArchitecture).lib;$(ProjectDir)..\LIB\NativeConssoleAppAids$(PlatformArchitecture).lib;$(ProjectDir)..\LIB\NativeStringAids$(PlatformArchitecture).lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(WWLinkLibPath);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <DataExecutionPrevention>true</DataExecutionPrevention>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <!-- Setting this key to True implies FASTLINK. To override this behavior,
+      <!--
+           Setting this key to True implies FASTLINK. To override this behavior,
            specify DebugFull, which equates to a value of "Generate Debug
            Information optimized for sharing and publishing (/DEBUG:FULL)" for
            the Generate Debug Info property on the Linker property sheet.
@@ -328,11 +364,14 @@
       <PreprocessorDefinitions>PLATFORM_IS_$(Platform);PROJ_IS_$(ProjectName);WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <!-- These options are the same for all configurations and platforms. -->
       <AdditionalIncludeDirectories>$(WWIncludePath);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerOutput>AssemblyAndSourceCode</AssemblerOutput>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <ConformanceMode>true</ConformanceMode>
+      <DiagnosticsFormat>Caret</DiagnosticsFormat>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
+      <MultiProcessorCompilation>false</MultiProcessorCompilation>
       <OmitFramePointers>false</OmitFramePointers>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
@@ -344,11 +383,12 @@
     <Link>
       <ImageHasSafeExceptionHandlers>true</ImageHasSafeExceptionHandlers>
       <!-- These options are the same for all configurations and platforms. -->
-      <AdditionalDependencies>$(ProjectDir)..\LIB\NativeConssoleAppAids$(PlatformArchitecture).lib;$(ProjectDir)..\$(Platform)\$(Configuration)\CRTTime$(PlatformArchitecture).lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(ProjectDir)..\$(Platform)\$(Configuration)\CRTTime$(PlatformArchitecture).lib;$(ProjectDir)..\LIB\NativeConssoleAppAids$(PlatformArchitecture).lib;$(ProjectDir)..\LIB\NativeStringAids$(PlatformArchitecture).lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(WWLinkLibPath);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <DataExecutionPrevention>true</DataExecutionPrevention>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <!-- Setting this key to True implies FASTLINK. To override this behavior,
+      <!--
+           Setting this key to True implies FASTLINK. To override this behavior,
            specify DebugFull, which equates to a value of "Generate Debug
            Information optimized for sharing and publishing (/DEBUG:FULL)" for
            the Generate Debug Info property on the Linker property sheet.
@@ -375,27 +415,30 @@
       <PreprocessorDefinitions>PLATFORM_IS_$(Platform);PROJ_IS_$(ProjectName);NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <!-- These options are the same for all configurations and platforms. -->
       <AdditionalIncludeDirectories>$(WWIncludePath);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerOutput>AssemblyAndSourceCode</AssemblerOutput>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <ConformanceMode>true</ConformanceMode>
+      <DiagnosticsFormat>Caret</DiagnosticsFormat>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
+      <MultiProcessorCompilation>false</MultiProcessorCompilation>
       <OmitFramePointers>false</OmitFramePointers>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <SDLCheck>true</SDLCheck>
       <SuppressStartupBanner>false</SuppressStartupBanner>
       <WarningLevel>Level3</WarningLevel>
-      <AssemblerOutput>AssemblyAndSourceCode</AssemblerOutput>
     </ClCompile>
     <Link>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
       <!-- These options are the same for all configurations and platforms. -->
-      <AdditionalDependencies>$(ProjectDir)..\LIB\NativeConssoleAppAids$(PlatformArchitecture).lib;$(ProjectDir)..\$(Platform)\$(Configuration)\CRTTime$(PlatformArchitecture).lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(ProjectDir)..\$(Platform)\$(Configuration)\CRTTime$(PlatformArchitecture).lib;$(ProjectDir)..\LIB\NativeConssoleAppAids$(PlatformArchitecture).lib;$(ProjectDir)..\LIB\NativeStringAids$(PlatformArchitecture).lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(WWLinkLibPath);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <DataExecutionPrevention>true</DataExecutionPrevention>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <!-- Setting this key to True implies FASTLINK. To override this behavior,
+      <!--
+           Setting this key to True implies FASTLINK. To override this behavior,
            specify DebugFull, which equates to a value of "Generate Debug
            Information optimized for sharing and publishing (/DEBUG:FULL)" for
            the Generate Debug Info property on the Linker property sheet.
@@ -422,11 +465,14 @@
       <PreprocessorDefinitions>PLATFORM_IS_$(Platform);PROJ_IS_$(ProjectName);NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <!-- These options are the same for all configurations and platforms. -->
       <AdditionalIncludeDirectories>$(WWIncludePath);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerOutput>AssemblyAndSourceCode</AssemblerOutput>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <ConformanceMode>true</ConformanceMode>
+      <DiagnosticsFormat>Caret</DiagnosticsFormat>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
+      <MultiProcessorCompilation>false</MultiProcessorCompilation>
       <OmitFramePointers>false</OmitFramePointers>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
@@ -437,11 +483,12 @@
     <Link>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
       <!-- These options are the same for all configurations and platforms. -->
-      <AdditionalDependencies>$(ProjectDir)..\LIB\NativeConssoleAppAids$(PlatformArchitecture).lib;$(ProjectDir)..\$(Platform)\$(Configuration)\CRTTime$(PlatformArchitecture).lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(ProjectDir)..\$(Platform)\$(Configuration)\CRTTime$(PlatformArchitecture).lib;$(ProjectDir)..\LIB\NativeConssoleAppAids$(PlatformArchitecture).lib;$(ProjectDir)..\LIB\NativeStringAids$(PlatformArchitecture).lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(WWLinkLibPath);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <DataExecutionPrevention>true</DataExecutionPrevention>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <!-- Setting this key to True implies FASTLINK. To override this behavior,
+      <!--
+           Setting this key to True implies FASTLINK. To override this behavior,
            specify DebugFull, which equates to a value of "Generate Debug
            Information optimized for sharing and publishing (/DEBUG:FULL)" for
            the Generate Debug Info property on the Linker property sheet.
@@ -468,11 +515,14 @@
       <PreprocessorDefinitions>PLATFORM_IS_$(Platform);PROJ_IS_$(ProjectName);NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <!-- These options are the same for all configurations and platforms. -->
       <AdditionalIncludeDirectories>$(WWIncludePath);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerOutput>AssemblyAndSourceCode</AssemblerOutput>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <ConformanceMode>true</ConformanceMode>
+      <DiagnosticsFormat>Caret</DiagnosticsFormat>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
+      <MultiProcessorCompilation>false</MultiProcessorCompilation>
       <OmitFramePointers>false</OmitFramePointers>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
@@ -483,11 +533,12 @@
     <Link>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
       <!-- These options are the same for all configurations and platforms. -->
-      <AdditionalDependencies>$(ProjectDir)..\LIB\NativeConssoleAppAids$(PlatformArchitecture).lib;$(ProjectDir)..\$(Platform)\$(Configuration)\CRTTime$(PlatformArchitecture).lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(ProjectDir)..\$(Platform)\$(Configuration)\CRTTime$(PlatformArchitecture).lib;$(ProjectDir)..\LIB\NativeConssoleAppAids$(PlatformArchitecture).lib;$(ProjectDir)..\LIB\NativeStringAids$(PlatformArchitecture).lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(WWLinkLibPath);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <DataExecutionPrevention>true</DataExecutionPrevention>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <!-- Setting this key to True implies FASTLINK. To override this behavior,
+      <!--
+           Setting this key to True implies FASTLINK. To override this behavior,
            specify DebugFull, which equates to a value of "Generate Debug
            Information optimized for sharing and publishing (/DEBUG:FULL)" for
            the Generate Debug Info property on the Linker property sheet.
@@ -509,17 +560,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\INCLUDE\NativeConssoleAppAids.h" />
     <ClInclude Include="CRTTime_Unit_Tests.H" />
-    <ClInclude Include="NativeConssoleAppAids.h" />
     <ClInclude Include="..\CRTTime\CRTTime.H" />
     <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CRTTime_ANSI_Unit_Tests.C" />
     <ClCompile Include="CRTTime_Unicode_Unit_Tests.C" />
-    <ClCompile Include="CRTTime_Unit_Tests.C">
-      <MultiProcessorCompilation Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</MultiProcessorCompilation>
-    </ClCompile>
+    <ClCompile Include="CRTTime_Unit_Tests.C" />
   </ItemGroup>
   <ItemGroup>
     <None Include="CRTTime_Unit_Tests.INL" />
@@ -527,34 +576,13 @@
   <ItemGroup>
     <ResourceCompile Include="CRTTime_Unit_Tests.rc" />
   </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\..\EventLogging\ELALogger\WW_Icon1.ico" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
-  <!--
-    ============================================================================
-    2019/03/14 - DAG - To find other empty targets such as these two that you
-                       can redefine (override) to do tuff, look for the
-                       following string at the beginning of an XML comment.
-
-                       Redefine this target in your project
-
-                       The BeforeBuildGenerateSources target is ideal for
-                       displaying MSBuild property values.
-    ============================================================================
-  -->
-  <Target Name="BeforeBuildGenerateSources">
-    <Message Text="SolutionDir          = $(SolutionDir)" />
-    <Message Text="ProjectDir           = $(ProjectDir)" />
-    <Message Text="ProjectName          = $(ProjectName)" />
-    <Message Text="TargetName           = $(TargetName)" />
-    <Message Text="TargetExt            = $(TargetExt)" />
-    <Message Text="ProjectExt           = $(ProjectExt)" />
-    <Message Text="Platform             = $(Platform)" />
-    <Message Text="PlatformArchitecture = $(PlatformArchitecture)" />
-    <Message Text="Configuration        = $(Configuration)" />
-    <Message Text="OutDir               = $(OutDir)" />
-    <Message Text="IntDir               = $(IntDir)" />
-  </Target>
+  <Import Project="$(UserRootDir)\Microsoft.Cpp.user.targets" Condition="exists('$(UserRootDir)\Microsoft.Cpp.user.targets')" />
   <!--
     ============================================================================
     2019/03/05 - DAG - The TestSubjectDLL property is set in the last of two
